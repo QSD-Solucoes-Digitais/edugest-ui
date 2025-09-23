@@ -1,1 +1,126 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+
+@plugin "tailwindcss-primeui";
+
+:root {
+  --font-family-primary: 'Poppins', 'Montserrat', sans-serif; /* Títulos / logotipo */
+  --font-family-secondary: 'Montserrat', 'Roboto', sans-serif; /* Textos */
+
+  /* 🎨 Paleta Primary */
+  --p-primary-50: #f3f7fa !important;
+  --p-primary-100: #c3d7e2 !important;
+  --p-primary-200: #94b9cc !important;
+  --p-primary-300: #6598b7 !important;
+  --p-primary-400: #35799e !important;
+  --p-primary-500: #075989 !important;
+  --p-primary-600: #074c75 !important;
+  --p-primary-700: #063e61 !important;
+  --p-primary-800: #04324c !important; /* Azul Profundo */
+  --p-primary-900: #032437 !important;
+  --p-primary-950: #021621 !important;
+
+  --p-primary-color: var(--p-primary-500) !important;
+  --p-primary-hover-color: var(--p-primary-600) !important;
+  --p-primary-active-color: var(--p-primary-700) !important;
+  --p-primary-contrast-color: #ffffff !important;
+
+  /* 🎨 Paleta Surface */
+  --p-surface-0: #ffffff !important;
+  --p-surface-50: #f9fafc !important;
+  --p-surface-100: #f1f4f9 !important;
+  --p-surface-200: #e1e8f0 !important;
+  --p-surface-300: #cbd5e1 !important;
+  --p-surface-400: #94a3b8 !important;
+  --p-surface-500: #64748b !important;
+  --p-surface-600: #465568 !important;
+  --p-surface-700: #324154 !important;
+  --p-surface-800: #1e293b !important;
+  --p-surface-900: #0f172a !important; /* Preto Elegante */
+  --p-surface-950: #030617 !important;
+
+  /* 🎨 Cores secundárias extras */
+  --p-gray-500: #B0B0B0 !important; /* Cinza Neutro */
+
+  /* ⚙️ Botões e estados */
+  --p-button-primary-background: var(--p-primary-color) !important;
+  --p-button-primary-hover-background: var(--p-primary-hover-color) !important;
+  --p-button-primary-active-background: var(--p-primary-active-color) !important;
+  --p-button-primary-border-color: var(--p-primary-color) !important;
+  --p-button-primary-hover-border-color: var(--p-primary-hover-color) !important;
+  --p-button-primary-active-border-color: var(--p-primary-active-color) !important;
+  --p-button-primary-color: var(--p-primary-contrast-color) !important;
+  --p-button-primary-hover-color: var(--p-primary-contrast-color) !important;
+  --p-button-primary-active-color: var(--p-primary-contrast-color) !important;
+
+  --p-button-secondary-background: var(--p-surface-100) !important;
+  --p-button-secondary-hover-background: var(--p-surface-200) !important;
+  --p-button-secondary-active-background: var(--p-surface-300) !important;
+  --p-button-secondary-border-color: var(--p-surface-100) !important;
+  --p-button-secondary-hover-border-color: var(--p-surface-200) !important;
+  --p-button-secondary-active-border-color: var(--p-surface-300) !important;
+  --p-button-secondary-color: var(--p-surface-500) !important;
+  --p-button-secondary-hover-color: var(--p-surface-700) !important;
+  --p-button-secondary-active-color: var(--p-surface-800) !important;
+
+  --p-button-text-primary-color: var(--p-primary-color) !important;
+  --p-button-text-primary-hover-background: var(--p-primary-50) !important;
+  --p-button-text-primary-active-background: var(--p-primary-100) !important;
+
+  --p-button-text-secondary-color: var(--p-surface-500) !important;
+  --p-button-text-secondary-hover-background: var(--p-surface-50) !important;
+  --p-button-text-secondary-active-background: var(--p-surface-100) !important;
+
+  --p-button-border-radius: 0.5rem !important;
+  --p-button-rounded-border-radius: 2rem !important;
+  --p-button-padding-x: 1rem !important;
+  --p-button-padding-y: 0.5rem !important;
+
+  /* ⚙️ Outras cores de status (sucesso, aviso, info, perigo) */
+  --p-button-success-background: #00a854 !important;
+  --p-button-success-hover-background: #008e44 !important;
+  --p-button-success-active-background: #006f32 !important;
+  --p-button-success-color: #ffffff !important;
+
+  --p-button-warn-background: #ff9800 !important;
+  --p-button-warn-hover-background: #f57c00 !important;
+  --p-button-warn-active-background: #e65100 !important;
+  --p-button-warn-color: #ffffff !important;
+
+  --p-button-info-background: #1E90FF !important; /* Azul Futurista */
+  --p-button-info-hover-background: #1c86ee !important;
+  --p-button-info-active-background: #1874cd !important;
+  --p-button-info-color: #ffffff !important;
+
+  --p-button-danger-background: #d32f2f !important;
+  --p-button-danger-hover-background: #c62828 !important;
+  --p-button-danger-active-background: #b71c1c !important;
+  --p-button-danger-color: #ffffff !important;
+
+  --p-button-help-background: #9c27b0 !important;
+  --p-button-help-hover-background: #8e24aa !important;
+  --p-button-help-active-background: #7b1fa2 !important;
+  --p-button-help-color: #ffffff !important;
+  --text-color: #111111;
+  --background-color: #FFFFFF;
+}
+
+body {
+  color: var(--text-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-primary);
+  color: var(--p-primary-color);
+  margin: 0;
+}
+
+.highlight {
+  font-family: var(--font-family-primary);
+  color: var(--p-primary-hover-color);
+}
+

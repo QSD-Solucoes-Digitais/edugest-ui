@@ -1,0 +1,182 @@
+<div class="header">
+  <div class="card flex justify-start">
+    <p-drawer #drawerRef [(visible)]="visible">
+      <ng-template #headless>
+        <div class="flex flex-col h-full">
+          <div class="flex items-center justify-between px-6 pt-4 shrink-0">
+                <span class="inline-flex items-center gap-2">
+                    <i class="pi pi-warehouse mr-2 text-primary"></i>
+                    <span class="font-semibold text-2xl text-primary">EduGest</span>
+                </span>
+            <span>
+                    <p-button type="button" (click)="closeCallback($event)" icon="pi pi-times" rounded="true"
+                              outlined="true" styleClass="h-8 w-8"></p-button>
+                </span>
+          </div>
+          <div class="overflow-y-auto">
+            <ul class="list-none p-4 m-0">
+              <li>
+                <ul class="list-none p-0 m-0 overflow-hidden">
+                  <li>
+                    <a pRipple
+                       class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                      <i class="pi pi-home mr-2"></i>
+                      <span class="font-medium">Dashboard</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      pRipple
+                      pStyleClass="@next"
+                      enterFromClass="hidden"
+                      enterActiveClass="animate-slidedown"
+                      leaveToClass="hidden"
+                      leaveActiveClass="animate-slideup"
+                      class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple"
+                    >
+                      <span class="font-medium">Cadastros</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-4 pr-0 m-0 hidden overflow-y-hidden transition-all duration-[400ms] ease-in-out">
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-users mr-2"></i>
+                          <span class="font-medium">Responsáveis</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-graduation-cap mr-2"></i>
+                          <span class="font-medium">Alunos</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-address-book mr-2"></i>
+                          <span class="font-medium">Turmas</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-credit-card mr-2"></i>
+                          <span class="font-medium">Planos de Pagamento</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a
+                      pRipple
+                      pStyleClass="@next"
+                      enterFromClass="hidden"
+                      enterActiveClass="animate-slidedown"
+                      leaveToClass="hidden"
+                      leaveActiveClass="animate-slideup"
+                      class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple"
+                    >
+                      <span class="font-medium">Financeiro</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-4 pr-0 m-0 hidden overflow-y-hidden transition-all duration-[400ms] ease-in-out">
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-dollar mr-2"></i>
+                          <span class="font-medium">Mensalidades</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-receipt mr-2"></i>
+                          <span class="font-medium">Lista de Mensalidades</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-wallet mr-2"></i>
+                          <span class="font-medium">Contas a Pagar</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-building mr-2"></i>
+                          <span class="font-medium">Nota Fiscal</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a
+                      pRipple
+                      pStyleClass="@next"
+                      enterFromClass="hidden"
+                      enterActiveClass="animate-slidedown"
+                      leaveToClass="hidden"
+                      leaveActiveClass="animate-slideup"
+                      class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple"
+                    >
+                      <span class="font-medium">Ferramentas</span>
+                      <i class="pi pi-chevron-down ml-auto"></i>
+                    </a>
+                    <ul
+                      class="list-none py-0 pl-4 pr-0 m-0 hidden overflow-y-hidden transition-all duration-[400ms] ease-in-out">
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-chart-bar mr-2"></i>
+                          <span class="font-medium">Relatórios</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-bell mr-2"></i>
+                          <span class="font-medium">Notificações</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-file-arrow-up mr-2"></i>
+                          <span class="font-medium">Importação</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a pRipple
+                           class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
+                          <i class="pi pi-question-circle mr-2"></i>
+                          <span class="font-medium">Suporte</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </ng-template>
+    </p-drawer>
+    <div style="align-items: center; display: flex;">
+      <p-button (click)="visible = true"  icon="pi pi-bars" variant="outlined" severity="secondary"/>
+    </div>
+
+    <div style="align-items: center; padding-left: 1rem; display: flex;">
+        <i class="pi pi-warehouse mr-2 text-3xl text-primary"></i>
+      <div style="align-items: center; padding-left: 0.5rem;">
+        <h1 class="font-semibold text-2xl text-primary">EduGest</h1>
+        <h5>Sistema Escolar</h5>
+      </div>
+    </div>
+
+  </div>
+</div>
