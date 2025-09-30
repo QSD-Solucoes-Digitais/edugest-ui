@@ -4,11 +4,12 @@ import {Drawer, DrawerModule} from "primeng/drawer";
 import {Ripple} from "primeng/ripple";
 import {StyleClass} from "primeng/styleclass";
 import {AvatarModule} from 'primeng/avatar';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [DrawerModule, ButtonModule, Ripple, AvatarModule, StyleClass],
+  imports: [DrawerModule, ButtonModule, Ripple, AvatarModule, StyleClass, RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
