@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '${API_URL}',
+  apiUrl: 'https://edugest-api-production.up.railway.app/api',
 };
