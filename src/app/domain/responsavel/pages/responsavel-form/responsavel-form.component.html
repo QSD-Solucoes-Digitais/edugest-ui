@@ -1,0 +1,222 @@
+<p-toast />
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ titulo() }}</h1>
+    <p class="page-subtitle">Preencha os dados do responsável pelo aluno</p>
+  </div>
+  <p-button
+    label="Voltar"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    [text]="true"
+    routerLink="/responsaveis"
+  />
+</div>
+
+<form [formGroup]="form" (ngSubmit)="salvar()">
+
+  <p-card header="Dados pessoais">
+    <div class="formgrid grid">
+
+      <div class="field col-12">
+        <label for="nome">Nome completo *</label>
+        <input
+          pInputText
+          id="nome"
+          formControlName="nome"
+          placeholder="Ex: Maria da Silva"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('nome')"
+        />
+        @if (isInvalid('nome')) {
+          <small class="p-error">Nome é obrigatório.</small>
+        }
+      </div>
+
+      <div class="field col-6">
+        <label for="cpf">CPF *</label>
+        <input
+          pInputText
+          id="cpf"
+          formControlName="cpf"
+          placeholder="000.000.000-00"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('cpf')"
+        />
+        @if (isInvalid('cpf')) {
+          <small class="p-error">CPF inválido ou obrigatório.</small>
+        }
+      </div>
+
+      <div class="field col-6">
+        <label for="telefone">Telefone *</label>
+        <input
+          pInputText
+          id="telefone"
+          formControlName="telefone"
+          placeholder="(00) 00000-0000"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('telefone')"
+        />
+        @if (isInvalid('telefone')) {
+          <small class="p-error">Telefone é obrigatório.</small>
+        }
+      </div>
+
+      <div class="field col-9">
+        <label for="email">E-mail *</label>
+        <input
+          pInputText
+          id="email"
+          formControlName="email"
+          placeholder="exemplo@email.com"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('email')"
+        />
+        @if (isInvalid('email')) {
+          <small class="p-error">E-mail inválido ou obrigatório.</small>
+        }
+      </div>
+
+      <div class="field col-3">
+        <label for="status">Status *</label>
+        <p-select
+          inputId="status"
+          formControlName="status"
+          [options]="statusOpcoes"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+        />
+      </div>
+
+    </div>
+  </p-card>
+
+  <p-card header="Endereço">
+    <div formGroupName="endereco" class="formgrid grid">
+
+      <div class="field col-3">
+        <label for="cep">CEP *</label>
+        <input
+          pInputText
+          id="cep"
+          formControlName="cep"
+          placeholder="00000-000"
+          class="w-full"
+          [class.ng-invalid]="isInvalidEndereco('cep')"
+        />
+        @if (isInvalidEndereco('cep')) {
+          <small class="p-error">CEP deve estar no formato 00000-000.</small>
+        }
+      </div>
+
+      <div class="field col-7">
+        <label for="logradouro">Logradouro *</label>
+        <input
+          pInputText
+          id="logradouro"
+          formControlName="logradouro"
+          placeholder="Rua, Avenida..."
+          class="w-full"
+          [class.ng-invalid]="isInvalidEndereco('logradouro')"
+        />
+        @if (isInvalidEndereco('logradouro')) {
+          <small class="p-error">Logradouro é obrigatório.</small>
+        }
+      </div>
+
+      <div class="field col-2">
+        <label for="numero">Número *</label>
+        <input
+          pInputText
+          id="numero"
+          formControlName="numero"
+          placeholder="123"
+          class="w-full"
+          [class.ng-invalid]="isInvalidEndereco('numero')"
+        />
+        @if (isInvalidEndereco('numero')) {
+          <small class="p-error">Obrigatório.</small>
+        }
+      </div>
+
+      <div class="field col-6">
+        <label for="complemento">Complemento</label>
+        <input
+          pInputText
+          id="complemento"
+          formControlName="complemento"
+          placeholder="Apto, Bloco..."
+          class="w-full"
+        />
+      </div>
+
+      <div class="field col-6">
+        <label for="bairro">Bairro *</label>
+        <input
+          pInputText
+          id="bairro"
+          formControlName="bairro"
+          placeholder="Nome do bairro"
+          class="w-full"
+          [class.ng-invalid]="isInvalidEndereco('bairro')"
+        />
+        @if (isInvalidEndereco('bairro')) {
+          <small class="p-error">Bairro é obrigatório.</small>
+        }
+      </div>
+
+      <div class="field col-10">
+        <label for="cidade">Cidade *</label>
+        <input
+          pInputText
+          id="cidade"
+          formControlName="cidade"
+          placeholder="Nome da cidade"
+          class="w-full"
+          [class.ng-invalid]="isInvalidEndereco('cidade')"
+        />
+        @if (isInvalidEndereco('cidade')) {
+          <small class="p-error">Cidade é obrigatória.</small>
+        }
+      </div>
+
+      <div class="field col-2">
+        <label for="uf">UF *</label>
+        <input
+          pInputText
+          id="uf"
+          formControlName="uf"
+          placeholder="SP"
+          maxlength="2"
+          class="w-full"
+          [class.ng-invalid]="isInvalidEndereco('uf')"
+        />
+        @if (isInvalidEndereco('uf')) {
+          <small class="p-error">Obrigatório.</small>
+        }
+      </div>
+
+    </div>
+  </p-card>
+
+  <div class="form-actions">
+    <p-button
+      [label]="modoDetalhe() ? 'Voltar' : 'Cancelar'"
+      severity="secondary"
+      [text]="true"
+      routerLink="/responsaveis"
+    />
+    @if (!modoDetalhe()) {
+      <p-button
+        type="submit"
+        [label]="id() ? 'Salvar alterações' : 'Cadastrar responsável'"
+        icon="pi pi-check"
+        [loading]="salvando()"
+      />
+    }
+  </div>
+
+</form>

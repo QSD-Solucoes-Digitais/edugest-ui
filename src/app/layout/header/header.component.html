@@ -1,0 +1,55 @@
+<header class="app-header">
+  <div class="header-brand">
+    <p-button
+      icon="pi pi-bars"
+      [rounded]="true"
+      [text]="true"
+      styleClass="header-btn"
+      (onClick)="layout.toggle()"
+    />
+    <div class="brand-icon">
+      <i class="pi pi-graduation-cap"></i>
+    </div>
+    <div class="brand-text">
+      <span class="brand-title">EduGest</span>
+      <span class="brand-subtitle">{{ schoolName }}</span>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <p-button
+      icon="pi pi-bell"
+      [rounded]="true"
+      [text]="true"
+      severity="secondary"
+      [badge]="notificationCount.toString()"
+      badgeSeverity="danger"
+      styleClass="header-btn"
+      pTooltip="Notificações"
+      tooltipPosition="bottom"
+    />
+
+    <div class="header-user">
+      <div class="user-info">
+        <span class="user-name">{{ nomeUsuario() }}</span>
+        <span class="user-role">{{ perfilLabel() }}</span>
+      </div>
+      <p-avatar
+        [label]="iniciaisUsuario()"
+        shape="circle"
+        styleClass="user-avatar"
+      />
+    </div>
+
+    <p-button
+      icon="pi pi-sign-out"
+      [rounded]="true"
+      [text]="true"
+      severity="secondary"
+      styleClass="header-btn"
+      pTooltip="Sair"
+      tooltipPosition="bottom"
+      (onClick)="logout()"
+    />
+  </div>
+</header>

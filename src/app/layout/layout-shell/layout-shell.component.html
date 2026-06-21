@@ -1,0 +1,24 @@
+<app-header />
+
+@if (loadingService.loading()) {
+  <div class="loading-overlay">
+    <p-progress-spinner strokeWidth="4" />
+  </div>
+}
+
+<div class="app-body">
+  @if (layout.sidebarOpen()) {
+    <div class="sidebar-overlay" (click)="layout.close()"></div>
+    <app-sidebar />
+  }
+
+  <main class="app-main">
+    <div class="page-content">
+      <p-breadcrumb [model]="breadcrumbs()" [home]="home" styleClass="page-breadcrumb" />
+      <p-card styleClass="page-card">
+        <router-outlet />
+      </p-card>
+    </div>
+    <app-footer />
+  </main>
+</div>
