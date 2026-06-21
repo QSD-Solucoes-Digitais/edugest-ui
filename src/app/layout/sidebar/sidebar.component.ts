@@ -13,6 +13,7 @@ interface MenuItem {
   children?: MenuItem[];
   expanded?: boolean;
   allowedPerfis?: PerfilUsuario[];
+  disabled?: boolean;
 }
 
 @Component({
@@ -52,8 +53,8 @@ export class SidebarComponent implements OnInit {
       allowedPerfis: ['ADMIN', 'SECRETARIA'],
       expanded: false,
       children: [
-        { label: 'Cadastrar', icon: 'pi pi-plus', route: '/alunos/novo' },
-        { label: 'Consultar', icon: 'pi pi-list', route: '/alunos' },
+        { label: 'Cadastrar', icon: 'pi pi-plus', route: '/alunos/novo', disabled: true },
+        { label: 'Consultar', icon: 'pi pi-list', route: '/alunos',      disabled: true },
       ],
     },
     {
@@ -62,10 +63,10 @@ export class SidebarComponent implements OnInit {
       allowedPerfis: ['ADMIN', 'FINANCEIRO'],
       expanded: false,
       children: [
-        { label: 'Cobranças',   icon: 'pi pi-file-export',          route: '/mensalidades/cobrancas' },
-        { label: 'Pagamentos',  icon: 'pi pi-check-circle',          route: '/mensalidades/pagamentos' },
-        { label: 'Vencimentos', icon: 'pi pi-calendar-times',        route: '/mensalidades/vencimentos' },
-        { label: 'Planos',      icon: 'pi pi-tag',                   route: '/mensalidades/planos' },
+        { label: 'Cobranças',   icon: 'pi pi-file-export',         route: '/mensalidades/cobrancas',   disabled: true },
+        { label: 'Pagamentos',  icon: 'pi pi-check-circle',         route: '/mensalidades/pagamentos',  disabled: true },
+        { label: 'Vencimentos', icon: 'pi pi-calendar-times',       route: '/mensalidades/vencimentos', disabled: true },
+        { label: 'Planos',      icon: 'pi pi-tag',                  route: '/mensalidades/planos',      disabled: true },
       ],
     },
     {
@@ -74,9 +75,9 @@ export class SidebarComponent implements OnInit {
       allowedPerfis: ['ADMIN', 'FINANCEIRO'],
       expanded: false,
       children: [
-        { label: 'Relatórios',    icon: 'pi pi-file-pdf',              route: '/financeiro/relatorios' },
-        { label: 'Inadimplência', icon: 'pi pi-exclamation-triangle',  route: '/financeiro/inadimplencia' },
-        { label: 'Extrato',       icon: 'pi pi-receipt',               route: '/financeiro/extrato' },
+        { label: 'Relatórios',    icon: 'pi pi-file-pdf',             route: '/financeiro/relatorios',    disabled: true },
+        { label: 'Inadimplência', icon: 'pi pi-exclamation-triangle', route: '/financeiro/inadimplencia', disabled: true },
+        { label: 'Extrato',       icon: 'pi pi-receipt',              route: '/financeiro/extrato',       disabled: true },
       ],
     },
     {
@@ -84,9 +85,9 @@ export class SidebarComponent implements OnInit {
       icon: 'pi pi-bell',
       expanded: false,
       children: [
-        { label: 'WhatsApp', icon: 'pi pi-whatsapp', route: '/notificacoes/whatsapp' },
-        { label: 'E-mail',   icon: 'pi pi-envelope', route: '/notificacoes/email' },
-        { label: 'Histórico',icon: 'pi pi-history',  route: '/notificacoes/historico' },
+        { label: 'WhatsApp', icon: 'pi pi-whatsapp', route: '/notificacoes/whatsapp', disabled: true },
+        { label: 'E-mail',   icon: 'pi pi-envelope', route: '/notificacoes/email',    disabled: true },
+        { label: 'Histórico',icon: 'pi pi-history',  route: '/notificacoes/historico',disabled: true },
       ],
     },
     {
@@ -99,6 +100,7 @@ export class SidebarComponent implements OnInit {
       label: 'Configurações',
       icon: 'pi pi-cog',
       route: '/configuracoes',
+      disabled: true,
     },
   ]);
 

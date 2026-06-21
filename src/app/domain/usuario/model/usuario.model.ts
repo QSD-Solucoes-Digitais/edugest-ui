@@ -4,15 +4,20 @@ export interface Usuario {
   id: number;
   nome: string;
   login: string;
-  email: string;
   perfil: PerfilUsuario;
   ativo: boolean;
+  criadoEm?: string;
+  atualizadoEm?: string;
 }
 
 export interface UsuarioInput {
   nome: string;
   login: string;
-  email: string;
   perfil: PerfilUsuario;
-  senha?: string;
+  ativo?: boolean;
+}
+
+export interface UsuarioFiltro {
+  perfil?: PerfilUsuario;
+  ativo?: boolean;
 }

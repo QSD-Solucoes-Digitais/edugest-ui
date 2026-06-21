@@ -119,3 +119,23 @@
     font-weight: 500;
   }
 }
+
+.menu-link.disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+
+  &:hover {
+    background-color: transparent;
+    color: #475569;
+  }
+}
+
+.submenu-link.disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+
+  &:hover {
+    background-color: transparent;
+    color: #64748b;
+  }
+}

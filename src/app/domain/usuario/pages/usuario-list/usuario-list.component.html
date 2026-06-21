@@ -1,0 +1,226 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Gestão de Usuários</h1>
+    <p class="page-subtitle">Gerencie os acessos ao sistema</p>
+  </div>
+  <p-button label="Novo Usuário" icon="pi pi-plus" (onClick)="abrirDrawerNovo()" />
+</div>
+
+<div class="filters-card">
+  <form [formGroup]="filtroForm" class="filters-row">
+    <div class="filter-field">
+      <label>Perfil</label>
+      <p-select
+        formControlName="perfil"
+        [options]="opcioesPerfil"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos os perfis"
+        styleClass="w-full"
+      />
+    </div>
+    <div class="filter-field">
+      <label>Status</label>
+      <p-select
+        formControlName="ativo"
+        [options]="opcoesStatus"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos os status"
+        styleClass="w-full"
+      />
+    </div>
+    <div class="filter-actions">
+      <p-button label="Filtrar" icon="pi pi-search" (onClick)="filtrar()" />
+      <p-button label="Limpar" icon="pi pi-times" [outlined]="true" (onClick)="limparFiltros()" />
+    </div>
+  </form>
+</div>
+
+<div class="section-card">
+  <p-table
+    [value]="usuarios()"
+    [lazy]="true"
+    [loading]="carregando()"
+    [totalRecords]="totalRegistros()"
+    [rows]="tamanhoPagina"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [paginator]="true"
+    (onLazyLoad)="onCarregarDados($event)"
+    styleClass="w-full"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Nome</th>
+        <th>E-mail</th>
+        <th>Perfil</th>
+        <th>Status</th>
+        <th>Criado em</th>
+        <th style="width: 7rem">Ações</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="loadingbody">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <tr>
+          <td><p-skeleton height="1.25rem" /></td>
+          <td><p-skeleton height="1.25rem" /></td>
+          <td><p-skeleton height="1.25rem" width="6rem" /></td>
+          <td><p-skeleton height="1.25rem" width="5rem" /></td>
+          <td><p-skeleton height="1.25rem" width="8rem" /></td>
+          <td><p-skeleton height="1.25rem" width="4rem" /></td>
+        </tr>
+      }
+    </ng-template>
+
+    <ng-template pTemplate="body" let-usuario>
+      <tr>
+        <td class="nome-cell">
+          <div class="user-info">
+            <div class="user-avatar">{{ usuario.nome.charAt(0).toUpperCase() }}</div>
+            <span>{{ usuario.nome }}</span>
+          </div>
+        </td>
+        <td class="email-cell">{{ usuario.login }}</td>
+        <td>
+          <p-tag
+            [value]="labelPerfil(usuario.perfil)"
+            [severity]="severidadePerfil(usuario.perfil)"
+          />
+        </td>
+        <td>
+          <p-tag
+            [value]="usuario.ativo ? 'Ativo' : 'Inativo'"
+            [severity]="usuario.ativo ? 'success' : 'danger'"
+          />
+        </td>
+        <td class="date-cell">{{ usuario.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <div class="actions-cell">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="secondary"
+              pTooltip="Editar"
+              tooltipPosition="top"
+              (onClick)="abrirDrawerEdicao(usuario)"
+            />
+            @if (usuario.ativo) {
+              <p-button
+                icon="pi pi-ban"
+                [rounded]="true"
+                [text]="true"
+                size="small"
+                severity="danger"
+                pTooltip="Inativar"
+                tooltipPosition="top"
+                (onClick)="confirmarInativacao(usuario)"
+              />
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6">
+          <div class="empty-state">
+            <i class="pi pi-users"></i>
+            <span>Nenhum usuário encontrado</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-drawer
+  [(visible)]="drawerVisivel"
+  [header]="tituloDrawer"
+  position="right"
+  styleClass="usuario-drawer"
+  (onHide)="fecharDrawer()"
+>
+  <form [formGroup]="formulario" class="drawer-form">
+    <div class="field">
+      <label for="nome">Nome <span class="required">*</span></label>
+      <input
+        pInputText
+        id="nome"
+        formControlName="nome"
+        placeholder="Nome completo"
+        class="w-full"
+        [class.ng-invalid]="nomeInvalido"
+        [class.ng-dirty]="nomeInvalido"
+      />
+      @if (nomeInvalido) {
+        <small class="field-error">{{ erroNome }}</small>
+      }
+    </div>
+
+    <div class="field">
+      <label for="login">E-mail <span class="required">*</span></label>
+      <input
+        pInputText
+        id="login"
+        formControlName="login"
+        placeholder="email@exemplo.com"
+        class="w-full"
+        [class.ng-invalid]="loginInvalido"
+        [class.ng-dirty]="loginInvalido"
+      />
+      @if (loginInvalido) {
+        <small class="field-error">{{ erroLogin }}</small>
+      }
+      @if (!modoEdicao) {
+        <small class="field-hint">
+          <i class="pi pi-info-circle"></i>
+          Uma senha temporária será enviada para este e-mail.
+        </small>
+      }
+    </div>
+
+    <div class="field">
+      <label for="perfil">Perfil <span class="required">*</span></label>
+      <p-select
+        inputId="perfil"
+        formControlName="perfil"
+        [options]="opcoesPerfisForm"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione o perfil"
+        styleClass="w-full"
+        [class.ng-invalid]="perfilInvalido"
+      />
+      @if (perfilInvalido) {
+        <small class="field-error">Selecione um perfil</small>
+      }
+    </div>
+
+    @if (modoEdicao) {
+      <div class="field field-toggle">
+        <label for="ativo">Usuário ativo</label>
+        <p-toggleswitch inputId="ativo" formControlName="ativo" />
+      </div>
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="drawer-footer">
+      <p-button label="Cancelar" [outlined]="true" severity="secondary" (onClick)="fecharDrawer()" />
+      <p-button
+        label="Salvar"
+        icon="pi pi-check"
+        [loading]="salvando()"
+        (onClick)="salvar()"
+      />
+    </div>
+  </ng-template>
+</p-drawer>

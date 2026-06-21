@@ -4,16 +4,23 @@
       <li class="menu-item" [class.has-children]="item.children">
 
         @if (!item.children) {
-          <a
-            class="menu-link"
-            [routerLink]="item.route"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            (click)="layout.close()"
-          >
-            <i [class]="item.icon"></i>
-            <span>{{ item.label }}</span>
-          </a>
+          @if (item.disabled) {
+            <span class="menu-link disabled">
+              <i [class]="item.icon"></i>
+              <span>{{ item.label }}</span>
+            </span>
+          } @else {
+            <a
+              class="menu-link"
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="layout.close()"
+            >
+              <i [class]="item.icon"></i>
+              <span>{{ item.label }}</span>
+            </a>
+          }
         }
 
         @if (item.children) {
@@ -31,16 +38,23 @@
             <ul class="submenu-list">
               @for (child of item.children; track child.label) {
                 <li class="submenu-item">
-                  <a
-                    class="submenu-link"
-                    [routerLink]="child.route"
-                    routerLinkActive="active"
-                    [routerLinkActiveOptions]="{ exact: true }"
-                    (click)="layout.close()"
-                  >
-                    <i [class]="child.icon"></i>
-                    <span>{{ child.label }}</span>
-                  </a>
+                  @if (child.disabled) {
+                    <span class="submenu-link disabled">
+                      <i [class]="child.icon"></i>
+                      <span>{{ child.label }}</span>
+                    </span>
+                  } @else {
+                    <a
+                      class="submenu-link"
+                      [routerLink]="child.route"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      (click)="layout.close()"
+                    >
+                      <i [class]="child.icon"></i>
+                      <span>{{ child.label }}</span>
+                    </a>
+                  }
                 </li>
               }
             </ul>

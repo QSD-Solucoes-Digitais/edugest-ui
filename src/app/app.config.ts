@@ -7,7 +7,7 @@ import { definePreset } from '@primeuix/themes';
 
 import { routes } from './app.routes';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
-import {MessageService} from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import {errorInterceptor} from './core/http/interceptors/error.interceptor';
 import {authInterceptor} from './core/http/interceptors/auth.interceptor';
 import {loadingInterceptor} from './core/http/interceptors/loading.interceptor';
