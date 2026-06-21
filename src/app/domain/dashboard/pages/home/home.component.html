@@ -1,0 +1,67 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Visão geral</h1>
+    <p class="page-subtitle">Acompanhe os pagamentos e a situação financeira da escola</p>
+  </div>
+  <p-button label="Nova cobrança" icon="pi pi-plus" />
+</div>
+
+<div class="stats-grid">
+  @for (stat of stats; track stat.label) {
+    <div class="stat-card stat-{{ stat.color }}">
+      <div class="stat-icon">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ stat.label }}</span>
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-sub">{{ stat.sub }}</span>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="section-card">
+  <div class="section-header">
+    <h2 class="section-title">Pagamentos recentes</h2>
+    <p-button label="Ver todos" [text]="true" icon="pi pi-arrow-right" iconPos="right" size="small" />
+  </div>
+
+  <table class="payments-table">
+    <thead>
+      <tr>
+        <th>Aluno</th>
+        <th>Valor</th>
+        <th>Vencimento</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (payment of recentPayments; track payment.student) {
+        <tr>
+          <td>
+            <div class="student-cell">
+              <div class="student-avatar">{{ payment.student.charAt(0) }}</div>
+              <span>{{ payment.student }}</span>
+            </div>
+          </td>
+          <td class="amount-cell">{{ payment.amount | currency:'BRL':'symbol':'1.2-2' }}</td>
+          <td class="date-cell">{{ payment.dueDate }}</td>
+          <td>
+            <p-tag
+              [value]="getStatusLabel(payment.status)"
+              [severity]="getStatusSeverity(payment.status)"
+            />
+          </td>
+          <td>
+            <div class="actions-cell">
+              <p-button icon="pi pi-eye"  [rounded]="true" [text]="true" size="small" severity="secondary" />
+              <p-button icon="pi pi-send" [rounded]="true" [text]="true" size="small" severity="secondary" />
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

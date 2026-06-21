@@ -1,0 +1,115 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Responsáveis</h1>
+    <p class="page-subtitle">Gerencie os responsáveis pelos alunos cadastrados</p>
+  </div>
+  <p-button
+    label="Novo responsável"
+    icon="pi pi-plus"
+    routerLink="/responsaveis/novo"
+  />
+</div>
+
+<p-table
+  [value]="responsaveis()"
+  [loading]="carregando()"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="rows()"
+  [totalRecords]="totalRecords()"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  [sortField]="sortField()"
+  [sortOrder]="sortOrder()"
+  [filterDelay]="500"
+  (onLazyLoad)="onLazyLoad($event)"
+  stripedRows
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
+      <th pSortableColumn="cpf">CPF <p-sortIcon field="cpf" /></th>
+      <th pSortableColumn="telefone">Telefone <p-sortIcon field="telefone" /></th>
+      <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+      <th style="width: 8rem">Ações</th>
+    </tr>
+    <tr>
+      <th>
+        <p-columnFilter type="text" field="nome" [showMenu]="false" placeholder="Filtrar por nome" />
+      </th>
+      <th>
+        <p-columnFilter type="text" field="cpf" [showMenu]="false" placeholder="Filtrar por CPF" />
+      </th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-responsavel>
+    <tr>
+      <td>
+        <div class="nome-cell">
+          <p-avatar [label]="responsavel.nome.charAt(0)" shape="circle" />
+          <span>{{ responsavel.nome }}</span>
+        </div>
+      </td>
+      <td><span class="font-mono">{{ formatarCpf(responsavel.cpf) }}</span></td>
+      <td>{{ formatarTelefone(responsavel.telefone) }}</td>
+      <td>
+        <p-tag
+          [value]="responsavel.status === 'ATIVO' ? 'Ativo' : 'Inativo'"
+          [severity]="responsavel.status === 'ATIVO' ? 'success' : 'danger'"
+        />
+      </td>
+      <td>
+        <div class="flex gap-1">
+          <p-button
+            icon="pi pi-eye"
+            [rounded]="true"
+            [text]="true"
+            size="small"
+            severity="info"
+            [routerLink]="['/responsaveis', responsavel.id, 'detalhar']"
+            pTooltip="Detalhar"
+            tooltipPosition="top"
+          />
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [text]="true"
+            size="small"
+            severity="secondary"
+            [routerLink]="['/responsaveis', responsavel.id, 'editar']"
+            pTooltip="Editar"
+            tooltipPosition="top"
+          />
+          <p-button
+            icon="pi pi-trash"
+            [rounded]="true"
+            [text]="true"
+            size="small"
+            severity="danger"
+            (onClick)="confirmarExclusao(responsavel)"
+            pTooltip="Excluir"
+            tooltipPosition="top"
+          />
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="5">
+        <div class="empty-state">
+          <i class="pi pi-users"></i>
+          <p class="empty-title">Nenhum responsável cadastrado</p>
+          <p class="empty-subtitle">Clique em "Novo responsável" para começar.</p>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
