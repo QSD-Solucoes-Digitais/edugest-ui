@@ -14,20 +14,25 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError(error => {
       const status: number = error?.status;
 
+      // Rotas de autenticação: componente trata o erro diretamente (sem toast, redirect ou logout)
+      if (req.url.includes('/autenticacao/')) {
+        return throwError(() => error);
+      }
+
       if (status === 401) {
         auth.logout();
         return throwError(() => error);
       }
 
       if (status === 403) {
-        router.navigate(['/acesso-negado']);
+        router.navigate(['/403']);
         return throwError(() => error);
       }
 
       const detail =
         status === 500
           ? 'Erro interno do servidor. Tente novamente mais tarde.'
-          : (error?.error?.message ?? 'Ocorreu um erro inesperado. Tente novamente.');
+          : (error?.error?.title ?? 'Ocorreu um erro inesperado. Tente novamente.');
 
       messageService.add({ severity: 'error', summary: 'Erro', detail });
       return throwError(() => error);

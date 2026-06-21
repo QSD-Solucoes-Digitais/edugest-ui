@@ -1,0 +1,54 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <i class="pi pi-graduation-cap"></i>
+      <h1>EduGest</h1>
+    </div>
+
+    @if (enviado()) {
+      <div class="feedback-state">
+        <i class="pi pi-envelope-open feedback-icon"></i>
+        <h2>Verifique seu e-mail</h2>
+        <p class="auth-subtitle">
+          Se este e-mail estiver cadastrado, você receberá as instruções em breve.
+        </p>
+      </div>
+    } @else {
+      <h2>Recuperar senha</h2>
+      <p class="auth-subtitle">Informe seu e-mail para receber o link de recuperação</p>
+
+      <form [formGroup]="form" (ngSubmit)="enviar()" class="auth-form">
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input
+            pInputText
+            id="email"
+            formControlName="email"
+            placeholder="seu@email.com"
+            class="w-full"
+            [class.ng-invalid]="emailInvalido"
+            [class.ng-dirty]="emailInvalido"
+          />
+          @if (emailInvalido) {
+            <small class="field-error">Informe um e-mail válido</small>
+          }
+        </div>
+
+        <p-button
+          type="submit"
+          label="Enviar link de recuperação"
+          icon="pi pi-envelope"
+          [loading]="carregando()"
+          [disabled]="form.invalid || carregando()"
+          styleClass="w-full mt-2"
+        />
+      </form>
+    }
+
+    <div class="auth-footer">
+      <a routerLink="/login">
+        <i class="pi pi-arrow-left"></i> Voltar ao login
+      </a>
+    </div>
+  </div>
+</div>

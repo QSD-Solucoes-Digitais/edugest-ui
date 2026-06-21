@@ -15,7 +15,18 @@
     <form [formGroup]="form" (ngSubmit)="entrar()" class="login-form">
       <div class="field">
         <label for="login">Usuário</label>
-        <input pInputText id="login" formControlName="login" placeholder="Seu login" class="w-full" />
+        <input
+          pInputText
+          id="login"
+          formControlName="login"
+          placeholder="Seu usuário"
+          class="w-full"
+          [class.ng-invalid]="loginInvalido"
+          [class.ng-dirty]="loginInvalido"
+        />
+        @if (loginInvalido) {
+          <small class="field-error">{{ erroLogin }}</small>
+        }
       </div>
 
       <div class="field">
@@ -28,7 +39,15 @@
           [toggleMask]="true"
           styleClass="w-full"
           inputStyleClass="w-full"
+          [invalid]="senhaInvalida"
         />
+        @if (senhaInvalida) {
+          <small class="field-error">{{ erroSenha }}</small>
+        }
+      </div>
+
+      <div class="forgot-password">
+        <a routerLink="/recuperar-senha">Esqueci minha senha</a>
       </div>
 
       <p-button
@@ -36,7 +55,7 @@
         label="Entrar"
         icon="pi pi-sign-in"
         [loading]="carregando()"
-        [disabled]="form.invalid"
+        [disabled]="form.invalid || carregando()"
         styleClass="w-full mt-2"
       />
     </form>

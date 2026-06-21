@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guards/auth.guard';
+import { roleGuard } from './core/auth/guards/role.guard';
 import { LayoutShellComponent } from './layout/layout-shell/layout-shell.component';
 
 export const routes: Routes = [
@@ -7,6 +8,25 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./core/auth/pages/login/login.component').then(m => m.LoginComponent),
+  },
+  {
+    path: 'recuperar-senha',
+    loadComponent: () =>
+      import('./core/auth/pages/recuperar-senha/recuperar-senha.component').then(
+        m => m.RecuperarSenhaComponent
+      ),
+  },
+  {
+    path: 'redefinir-senha',
+    loadComponent: () =>
+      import('./core/auth/pages/redefinir-senha/redefinir-senha.component').then(
+        m => m.RedefinirSenhaComponent
+      ),
+  },
+  {
+    path: '403',
+    loadComponent: () =>
+      import('./shared/pages/erro-403/erro-403.component').then(m => m.Erro403Component),
   },
   {
     path: '',
@@ -70,7 +90,8 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
-        data: { breadcrumbs: [{ label: 'Usuários' }] },
+        canActivate: [roleGuard],
+        data: { perfis: ['ADMIN'], breadcrumbs: [{ label: 'Usuários' }] },
         loadComponent: () =>
           import('./domain/usuario/pages/usuario-list/usuario-list.component').then(
             m => m.UsuarioListComponent

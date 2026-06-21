@@ -1,0 +1,85 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <i class="pi pi-graduation-cap"></i>
+      <h1>EduGest</h1>
+    </div>
+
+    @if (sucesso()) {
+      <div class="feedback-state success">
+        <i class="pi pi-check-circle feedback-icon"></i>
+        <h2>Senha redefinida!</h2>
+        <p class="auth-subtitle">
+          Sua senha foi alterada com sucesso.<br />
+          Redirecionando em <strong>{{ contagem() }}s</strong>...
+        </p>
+      </div>
+    } @else if (tokenInvalido()) {
+      <div class="feedback-state error">
+        <i class="pi pi-times-circle feedback-icon"></i>
+        <h2>Link inválido</h2>
+        <p class="auth-subtitle">Link expirado ou inválido. Solicite um novo.</p>
+        <p-button
+          label="Solicitar novo link"
+          icon="pi pi-envelope"
+          routerLink="/recuperar-senha"
+          styleClass="w-full"
+        />
+      </div>
+    } @else {
+      <h2>Redefinir senha</h2>
+      <p class="auth-subtitle">Crie uma nova senha para sua conta</p>
+
+      <form [formGroup]="form" (ngSubmit)="redefinir()" class="auth-form">
+        <div class="field">
+          <label for="novaSenha">Nova senha</label>
+          <p-password
+            inputId="novaSenha"
+            formControlName="novaSenha"
+            placeholder="Mínimo 6 caracteres"
+            [feedback]="false"
+            [toggleMask]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            [invalid]="novaSenhaInvalida"
+          />
+          @if (novaSenhaInvalida) {
+            <small class="field-error">A senha deve ter no mínimo 6 caracteres</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="confirmar">Confirmar nova senha</label>
+          <p-password
+            inputId="confirmar"
+            formControlName="confirmar"
+            placeholder="Repita a nova senha"
+            [feedback]="false"
+            [toggleMask]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            [invalid]="confirmarInvalido"
+          />
+          @if (confirmarInvalido) {
+            <small class="field-error">As senhas não conferem</small>
+          }
+        </div>
+
+        <p-button
+          type="submit"
+          label="Redefinir senha"
+          icon="pi pi-lock"
+          [loading]="carregando()"
+          [disabled]="form.invalid || carregando()"
+          styleClass="w-full mt-2"
+        />
+      </form>
+    }
+
+    <div class="auth-footer">
+      <a routerLink="/login">
+        <i class="pi pi-arrow-left"></i> Voltar ao login
+      </a>
+    </div>
+  </div>
+</div>

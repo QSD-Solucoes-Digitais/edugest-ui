@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { AuthService } from '../../auth/services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.includes('/autenticacao/login')) {
+  if (req.url.includes('/autenticacao/')) {
     return next(req);
   }
 

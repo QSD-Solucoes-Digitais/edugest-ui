@@ -68,6 +68,14 @@ export class AuthService {
     return { login: payload.sub, nome: payload.nome, perfil: payload.perfil };
   }
 
+  recuperarSenha(email: string) {
+    return this.http.post(`${this.url}/recuperar-senha`, { email });
+  }
+
+  redefinirSenha(token: string, novaSenha: string) {
+    return this.http.post(`${this.url}/redefinir-senha`, { token, novaSenha });
+  }
+
   private decodePayload(token: string): JwtPayload | null {
     try {
       const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
