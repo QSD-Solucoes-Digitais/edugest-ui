@@ -1,20 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
-import { DrawerModule } from 'primeng/drawer';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { SkeletonModule } from 'primeng/skeleton';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UsuarioService } from '../../service/usuario.service';
-import { Usuario, UsuarioFiltro, UsuarioInput } from '../../model/usuario.model';
+import { Usuario, UsuarioFiltro } from '../../model/usuario.model';
 import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
 
 @Component({
@@ -25,14 +22,10 @@ import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
     ReactiveFormsModule,
     TableModule,
     ButtonModule,
-    InputTextModule,
     SelectModule,
     TagModule,
-    DrawerModule,
     ConfirmDialogModule,
     ToastModule,
-    SkeletonModule,
-    ToggleSwitchModule,
     TooltipModule,
   ],
   providers: [ConfirmationService, MessageService],
@@ -44,83 +37,43 @@ export class UsuarioListComponent implements OnInit {
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   usuarios = signal<Usuario[]>([]);
   totalRegistros = signal(0);
   carregando = signal(false);
-  salvando = signal(false);
+  rows = signal(10);
 
-  tamanhoPagina = 10;
   paginaAtual = 0;
-  drawerVisivel = false;
-  modoEdicao = false;
-  usuarioEmEdicao: Usuario | null = null;
 
   opcioesPerfil = [
     { label: 'Todos os perfis', value: null },
-    { label: 'Administrador', value: 'ADMIN' as PerfilUsuario },
-    { label: 'Secretaria', value: 'SECRETARIA' as PerfilUsuario },
-    { label: 'Financeiro', value: 'FINANCEIRO' as PerfilUsuario },
+    { label: 'Administrador',   value: 'ADMIN' as PerfilUsuario },
+    { label: 'Secretaria',      value: 'SECRETARIA' as PerfilUsuario },
+    { label: 'Financeiro',      value: 'FINANCEIRO' as PerfilUsuario },
   ];
 
   opcoesStatus = [
     { label: 'Todos os status', value: null },
-    { label: 'Ativo', value: true },
-    { label: 'Inativo', value: false },
-  ];
-
-  opcoesPerfisForm = [
-    { label: 'Administrador', value: 'ADMIN' as PerfilUsuario },
-    { label: 'Secretaria', value: 'SECRETARIA' as PerfilUsuario },
-    { label: 'Financeiro', value: 'FINANCEIRO' as PerfilUsuario },
+    { label: 'Ativo',           value: true },
+    { label: 'Inativo',         value: false },
   ];
 
   filtroForm = this.fb.group({
     perfil: [null as PerfilUsuario | null],
-    ativo: [null as boolean | null],
+    ativo:  [null as boolean | null],
   });
-
-  formulario = this.fb.group({
-    nome: ['', [Validators.required, Validators.minLength(3)]],
-    login: ['', [Validators.required, Validators.email]],
-    perfil: [null as PerfilUsuario | null, Validators.required],
-    ativo: [true],
-  });
-
-  get tituloDrawer(): string {
-    return this.modoEdicao ? 'Editar Usuário' : 'Novo Usuário';
-  }
-
-  get nomeInvalido(): boolean {
-    const c = this.formulario.get('nome')!;
-    return c.invalid && c.touched;
-  }
-
-  get loginInvalido(): boolean {
-    const c = this.formulario.get('login')!;
-    return c.invalid && c.touched;
-  }
-
-  get perfilInvalido(): boolean {
-    const c = this.formulario.get('perfil')!;
-    return c.invalid && c.touched;
-  }
-
-  get erroNome(): string {
-    const c = this.formulario.get('nome')!;
-    if (c.hasError('required')) return 'Nome é obrigatório';
-    if (c.hasError('minlength')) return 'Nome deve ter ao menos 3 caracteres';
-    return '';
-  }
-
-  get erroLogin(): string {
-    const c = this.formulario.get('login')!;
-    if (c.hasError('required')) return 'E-mail é obrigatório';
-    if (c.hasError('email')) return 'Informe um e-mail válido';
-    return '';
-  }
 
   ngOnInit() {
+    const state = history.state;
+    if (state?.toastSeverity) {
+      this.messageService.add({
+        severity: state.toastSeverity,
+        summary:  state.toastSummary,
+        detail:   state.toastDetail,
+        life:     4000,
+      });
+    }
     this.carregarUsuarios();
   }
 
@@ -131,7 +84,7 @@ export class UsuarioListComponent implements OnInit {
     if (f.perfil) filtro.perfil = f.perfil;
     if (f.ativo !== null && f.ativo !== undefined) filtro.ativo = f.ativo;
 
-    this.usuarioService.listar(filtro, page, this.tamanhoPagina).subscribe({
+    this.usuarioService.listar(filtro, page, this.rows()).subscribe({
       next: (res) => {
         this.usuarios.set(res.content);
         this.totalRegistros.set(res.totalElements);
@@ -143,8 +96,9 @@ export class UsuarioListComponent implements OnInit {
   }
 
   onCarregarDados(event: TableLazyLoadEvent) {
-    const pagina = Math.floor((event.first ?? 0) / (event.rows ?? this.tamanhoPagina));
-    this.tamanhoPagina = event.rows ?? 10;
+    const rows = event.rows ?? this.rows();
+    const pagina = Math.floor((event.first ?? 0) / rows);
+    this.rows.set(rows);
     this.carregarUsuarios(pagina);
   }
 
@@ -157,78 +111,12 @@ export class UsuarioListComponent implements OnInit {
     this.carregarUsuarios(0);
   }
 
-  abrirDrawerNovo() {
-    this.modoEdicao = false;
-    this.usuarioEmEdicao = null;
-    this.formulario.reset({ ativo: true });
-    this.formulario.get('login')?.enable();
-    this.drawerVisivel = true;
+  novoUsuario() {
+    this.router.navigate(['/usuarios/novo']);
   }
 
-  abrirDrawerEdicao(usuario: Usuario) {
-    this.modoEdicao = true;
-    this.usuarioEmEdicao = usuario;
-    this.formulario.patchValue({
-      nome: usuario.nome,
-      login: usuario.login,
-      perfil: usuario.perfil,
-      ativo: usuario.ativo,
-    });
-    this.formulario.get('login')?.disable();
-    this.drawerVisivel = true;
-  }
-
-  fecharDrawer() {
-    this.drawerVisivel = false;
-    this.formulario.reset();
-  }
-
-  salvar() {
-    if (this.formulario.invalid) {
-      this.formulario.markAllAsTouched();
-      return;
-    }
-    this.salvando.set(true);
-    const dados = this.formulario.getRawValue() as UsuarioInput;
-
-    if (this.modoEdicao && this.usuarioEmEdicao) {
-      const id = this.usuarioEmEdicao.id;
-      this.usuarioService.atualizar(id, dados).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Usuário atualizado com sucesso.',
-          });
-          this.salvando.set(false);
-          this.fecharDrawer();
-          this.carregarUsuarios(this.paginaAtual);
-        },
-        error: (err) => {
-          const detalhe = err?.error?.message ?? 'Erro ao atualizar usuário.';
-          this.messageService.add({ severity: 'error', summary: 'Erro', detail: detalhe });
-          this.salvando.set(false);
-        },
-      });
-    } else {
-      this.usuarioService.criar(dados).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Usuário criado',
-            detail: 'Uma senha temporária foi enviada para o e-mail cadastrado.',
-          });
-          this.salvando.set(false);
-          this.fecharDrawer();
-          this.carregarUsuarios(0);
-        },
-        error: (err) => {
-          const detalhe = err?.error?.message ?? 'Erro ao criar usuário.';
-          this.messageService.add({ severity: 'error', summary: 'Erro', detail: detalhe });
-          this.salvando.set(false);
-        },
-      });
-    }
+  editarUsuario(usuario: Usuario) {
+    this.router.navigate(['/usuarios', usuario.id, 'editar']);
   }
 
   confirmarInativacao(usuario: Usuario) {
@@ -250,12 +138,13 @@ export class UsuarioListComponent implements OnInit {
           severity: 'success',
           summary: 'Sucesso',
           detail: `Usuário "${usuario.nome}" inativado.`,
+          life: 4000,
         });
         this.carregarUsuarios(this.paginaAtual);
       },
       error: (err) => {
         const detalhe = err?.error?.message ?? 'Erro ao inativar usuário.';
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: detalhe });
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: detalhe, life: 4000 });
       },
     });
   }

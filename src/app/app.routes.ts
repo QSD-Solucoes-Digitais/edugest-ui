@@ -91,11 +91,33 @@ export const routes: Routes = [
       {
         path: 'usuarios',
         canActivate: [roleGuard],
-        data: { perfis: ['ADMIN'], breadcrumbs: [{ label: 'Usuários' }] },
-        loadComponent: () =>
-          import('./domain/usuario/pages/usuario-list/usuario-list.component').then(
-            m => m.UsuarioListComponent
-          ),
+        data: { perfis: ['ADMIN'] },
+        children: [
+          {
+            path: '',
+            data: { breadcrumbs: [{ label: 'Usuários' }] },
+            loadComponent: () =>
+              import('./domain/usuario/pages/usuario-list/usuario-list.component').then(
+                m => m.UsuarioListComponent
+              ),
+          },
+          {
+            path: 'novo',
+            data: { breadcrumbs: [{ label: 'Usuários', routerLink: '/usuarios' }, { label: 'Novo' }] },
+            loadComponent: () =>
+              import('./domain/usuario/pages/usuario-form/usuario-form.component').then(
+                m => m.UsuarioFormComponent
+              ),
+          },
+          {
+            path: ':id/editar',
+            data: { breadcrumbs: [{ label: 'Usuários', routerLink: '/usuarios' }, { label: 'Editar' }] },
+            loadComponent: () =>
+              import('./domain/usuario/pages/usuario-form/usuario-form.component').then(
+                m => m.UsuarioFormComponent
+              ),
+          },
+        ],
       },
       { path: '**', redirectTo: 'dashboard' },
     ],

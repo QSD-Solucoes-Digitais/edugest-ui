@@ -94,7 +94,11 @@ export class SidebarComponent implements OnInit {
       label: 'Usuários',
       icon: 'pi pi-shield',
       allowedPerfis: ['ADMIN'],
-      route: '/usuarios',
+      expanded: false,
+      children: [
+        { label: 'Cadastrar', icon: 'pi pi-plus', route: '/usuarios/novo' },
+        { label: 'Consultar', icon: 'pi pi-list', route: '/usuarios' },
+      ],
     },
     {
       label: 'Configurações',

@@ -1,0 +1,105 @@
+<p-toast [life]="4000" />
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ titulo }}</h1>
+    <p class="page-subtitle">{{ subtitulo }}</p>
+  </div>
+  <p-button
+    label="Voltar"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    [text]="true"
+    routerLink="/usuarios"
+  />
+</div>
+
+<form [formGroup]="form" (ngSubmit)="salvar()">
+
+  <p-card header="Dados do usuário">
+    <div class="formgrid grid">
+
+      <div class="field col-12">
+        <label for="nome">Nome completo *</label>
+        <input
+          pInputText
+          id="nome"
+          formControlName="nome"
+          placeholder="Ex: João da Silva"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('nome')"
+        />
+        @if (isInvalid('nome')) {
+          <small class="p-error">{{ erroMensagem('nome') }}</small>
+        }
+      </div>
+
+      <div class="field col-12">
+        <label for="login">E-mail *</label>
+        <input
+          pInputText
+          id="login"
+          formControlName="login"
+          placeholder="exemplo@email.com"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('login')"
+        />
+        @if (isInvalid('login')) {
+          <small class="p-error">{{ erroMensagem('login') }}</small>
+        }
+        @if (!modoEdicao) {
+          <small class="campo-hint">
+            <i class="pi pi-info-circle"></i>
+            Uma senha temporária será enviada para este e-mail.
+          </small>
+        }
+      </div>
+
+      <div class="field" [class.col-6]="modoEdicao" [class.col-12]="!modoEdicao">
+        <label for="perfil">Perfil *</label>
+        <p-select
+          inputId="perfil"
+          formControlName="perfil"
+          [options]="opcoesPerfil"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecione o perfil"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('perfil')"
+        />
+        @if (isInvalid('perfil')) {
+          <small class="p-error">{{ erroMensagem('perfil') }}</small>
+        }
+      </div>
+
+      @if (modoEdicao) {
+        <div class="field col-6">
+          <label>Status</label>
+          <div class="toggle-row">
+            <p-toggleswitch inputId="ativo" formControlName="ativo" />
+            <label for="ativo" class="toggle-label">Usuário ativo</label>
+          </div>
+        </div>
+      }
+
+    </div>
+  </p-card>
+
+  <div class="form-actions">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      type="button"
+      routerLink="/usuarios"
+    />
+    <p-button
+      type="submit"
+      [label]="labelBotaoSalvar"
+      icon="pi pi-check"
+      [loading]="salvando()"
+      [disabled]="form.invalid || salvando()"
+    />
+  </div>
+
+</form>
