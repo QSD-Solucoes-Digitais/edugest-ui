@@ -4,6 +4,11 @@ import { LayoutShellComponent } from './layout/layout-shell/layout-shell.compone
 
 export const routes: Routes = [
   {
+    path: 'login',
+    loadComponent: () =>
+      import('./core/auth/pages/login/login.component').then(m => m.LoginComponent),
+  },
+  {
     path: '',
     component: LayoutShellComponent,
     canActivate: [authGuard],
@@ -19,35 +24,60 @@ export const routes: Routes = [
         path: 'responsaveis',
         data: { breadcrumbs: [{ label: 'Responsáveis' }] },
         loadComponent: () =>
-          import(
-            './domain/responsavel/pages/responsavel-lista/responsavel-lista.component'
-          ).then(m => m.ResponsavelListaComponent),
+          import('./domain/responsavel/pages/responsavel-lista/responsavel-lista.component').then(
+            m => m.ResponsavelListaComponent
+          ),
       },
       {
         path: 'responsaveis/novo',
         data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Novo' }] },
         loadComponent: () =>
-          import(
-            './domain/responsavel/pages/responsavel-form/responsavel-form.component'
-          ).then(m => m.ResponsavelFormComponent),
+          import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
+            m => m.ResponsavelFormComponent
+          ),
       },
       {
         path: 'responsaveis/:id/editar',
         data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Editar' }] },
         loadComponent: () =>
-          import(
-            './domain/responsavel/pages/responsavel-form/responsavel-form.component'
-          ).then(m => m.ResponsavelFormComponent),
+          import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
+            m => m.ResponsavelFormComponent
+          ),
       },
       {
         path: 'responsaveis/:id/detalhar',
         data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Detalhes' }] },
         loadComponent: () =>
-          import(
-            './domain/responsavel/pages/responsavel-form/responsavel-form.component'
-          ).then(m => m.ResponsavelFormComponent),
+          import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
+            m => m.ResponsavelFormComponent
+          ),
+      },
+      {
+        path: 'alunos',
+        data: { breadcrumbs: [{ label: 'Alunos' }] },
+        loadComponent: () =>
+          import('./domain/aluno/pages/aluno-list/aluno-list.component').then(
+            m => m.AlunoListComponent
+          ),
+      },
+      {
+        path: 'mensalidades',
+        data: { breadcrumbs: [{ label: 'Mensalidades' }] },
+        loadComponent: () =>
+          import('./domain/mensalidade/pages/mensalidade-list/mensalidade-list.component').then(
+            m => m.MensalidadeListComponent
+          ),
+      },
+      {
+        path: 'usuarios',
+        data: { breadcrumbs: [{ label: 'Usuários' }] },
+        loadComponent: () =>
+          import('./domain/usuario/pages/usuario-list/usuario-list.component').then(
+            m => m.UsuarioListComponent
+          ),
       },
       { path: '**', redirectTo: 'dashboard' },
     ],
   },
+  { path: '**', redirectTo: 'dashboard' },
 ];

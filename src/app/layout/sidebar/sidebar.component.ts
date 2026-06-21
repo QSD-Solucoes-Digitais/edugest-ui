@@ -1,8 +1,9 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, RouterLinkActive, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLinkActive, RouterModule } from '@angular/router';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
+import { AuthService, PerfilUsuario } from '../../core/auth/services/auth.service';
 import { LayoutService } from '../../core/services/layout.service';
 
 interface MenuItem {
@@ -11,6 +12,7 @@ interface MenuItem {
   route?: string;
   children?: MenuItem[];
   expanded?: boolean;
+  allowedPerfis?: PerfilUsuario[];
 }
 
 @Component({
@@ -22,18 +24,22 @@ interface MenuItem {
 })
 export class SidebarComponent implements OnInit {
   layout = inject(LayoutService);
+  private auth = inject(AuthService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
-  menuItems: MenuItem[] = [
+  private perfil = toSignal(this.auth.usuarioLogado$.pipe(map(u => u?.perfil ?? null)));
+
+  private itens = signal<MenuItem[]>([
     {
       label: 'Início',
       icon: 'pi pi-home',
-      route: '/home',
+      route: '/dashboard',
     },
     {
       label: 'Responsáveis',
       icon: 'pi pi-id-card',
+      allowedPerfis: ['ADMIN', 'SECRETARIA'],
       expanded: false,
       children: [
         { label: 'Cadastrar', icon: 'pi pi-plus', route: '/responsaveis/novo' },
@@ -43,6 +49,7 @@ export class SidebarComponent implements OnInit {
     {
       label: 'Alunos',
       icon: 'pi pi-users',
+      allowedPerfis: ['ADMIN', 'SECRETARIA'],
       expanded: false,
       children: [
         { label: 'Cadastrar', icon: 'pi pi-plus', route: '/alunos/novo' },
@@ -52,22 +59,24 @@ export class SidebarComponent implements OnInit {
     {
       label: 'Mensalidades',
       icon: 'pi pi-wallet',
+      allowedPerfis: ['ADMIN', 'FINANCEIRO'],
       expanded: false,
       children: [
-        { label: 'Cobranças', icon: 'pi pi-file-export', route: '/mensalidades/cobrancas' },
-        { label: 'Pagamentos', icon: 'pi pi-check-circle', route: '/mensalidades/pagamentos' },
-        { label: 'Vencimentos', icon: 'pi pi-calendar-times', route: '/mensalidades/vencimentos' },
-        { label: 'Planos', icon: 'pi pi-tag', route: '/mensalidades/planos' },
+        { label: 'Cobranças',   icon: 'pi pi-file-export',          route: '/mensalidades/cobrancas' },
+        { label: 'Pagamentos',  icon: 'pi pi-check-circle',          route: '/mensalidades/pagamentos' },
+        { label: 'Vencimentos', icon: 'pi pi-calendar-times',        route: '/mensalidades/vencimentos' },
+        { label: 'Planos',      icon: 'pi pi-tag',                   route: '/mensalidades/planos' },
       ],
     },
     {
       label: 'Financeiro',
       icon: 'pi pi-chart-bar',
+      allowedPerfis: ['ADMIN', 'FINANCEIRO'],
       expanded: false,
       children: [
-        { label: 'Relatórios', icon: 'pi pi-file-pdf', route: '/financeiro/relatorios' },
-        { label: 'Inadimplência', icon: 'pi pi-exclamation-triangle', route: '/financeiro/inadimplencia' },
-        { label: 'Extrato', icon: 'pi pi-receipt', route: '/financeiro/extrato' },
+        { label: 'Relatórios',    icon: 'pi pi-file-pdf',              route: '/financeiro/relatorios' },
+        { label: 'Inadimplência', icon: 'pi pi-exclamation-triangle',  route: '/financeiro/inadimplencia' },
+        { label: 'Extrato',       icon: 'pi pi-receipt',               route: '/financeiro/extrato' },
       ],
     },
     {
@@ -76,16 +85,29 @@ export class SidebarComponent implements OnInit {
       expanded: false,
       children: [
         { label: 'WhatsApp', icon: 'pi pi-whatsapp', route: '/notificacoes/whatsapp' },
-        { label: 'E-mail', icon: 'pi pi-envelope', route: '/notificacoes/email' },
-        { label: 'Histórico', icon: 'pi pi-history', route: '/notificacoes/historico' },
+        { label: 'E-mail',   icon: 'pi pi-envelope', route: '/notificacoes/email' },
+        { label: 'Histórico',icon: 'pi pi-history',  route: '/notificacoes/historico' },
       ],
+    },
+    {
+      label: 'Usuários',
+      icon: 'pi pi-shield',
+      allowedPerfis: ['ADMIN'],
+      route: '/usuarios',
     },
     {
       label: 'Configurações',
       icon: 'pi pi-cog',
       route: '/configuracoes',
     },
-  ];
+  ]);
+
+  menuItems = computed(() => {
+    const perfil = this.perfil();
+    return this.itens().filter(
+      item => !item.allowedPerfis || !perfil || item.allowedPerfis.includes(perfil)
+    );
+  });
 
   ngOnInit(): void {
     this.expandActive(this.router.url);
@@ -94,17 +116,21 @@ export class SidebarComponent implements OnInit {
       .subscribe(e => this.expandActive((e as NavigationEnd).urlAfterRedirects));
   }
 
-  private expandActive(url: string): void {
-    for (const item of this.menuItems) {
-      if (item.children) {
-        item.expanded = item.children.some(child => child.route === url || url.startsWith(child.route + '/'));
-      }
-    }
+  toggleMenu(item: MenuItem): void {
+    if (!item.children) return;
+    this.itens.update(lista =>
+      lista.map(i => (i.label === item.label ? { ...i, expanded: !i.expanded } : i))
+    );
   }
 
-  toggleMenu(item: MenuItem): void {
-    if (item.children) {
-      item.expanded = !item.expanded;
-    }
+  private expandActive(url: string): void {
+    this.itens.update(lista =>
+      lista.map(item => ({
+        ...item,
+        expanded: item.children
+          ? item.children.some(c => c.route === url || url.startsWith((c.route ?? '') + '/'))
+          : item.expanded,
+      }))
+    );
   }
 }

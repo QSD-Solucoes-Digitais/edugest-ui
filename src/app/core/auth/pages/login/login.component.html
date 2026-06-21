@@ -1,0 +1,44 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-logo">
+      <i class="pi pi-graduation-cap"></i>
+      <h1>EduGest</h1>
+    </div>
+
+    <h2>Bem-vindo de volta</h2>
+    <p class="login-subtitle">Faça login para acessar o sistema</p>
+
+    @if (erro()) {
+      <p-message severity="error" [text]="erro()!" styleClass="w-full mb-3" />
+    }
+
+    <form [formGroup]="form" (ngSubmit)="entrar()" class="login-form">
+      <div class="field">
+        <label for="login">Usuário</label>
+        <input pInputText id="login" formControlName="login" placeholder="Seu login" class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="senha">Senha</label>
+        <p-password
+          inputId="senha"
+          formControlName="senha"
+          placeholder="Sua senha"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
+
+      <p-button
+        type="submit"
+        label="Entrar"
+        icon="pi pi-sign-in"
+        [loading]="carregando()"
+        [disabled]="form.invalid"
+        styleClass="w-full mt-2"
+      />
+    </form>
+  </div>
+</div>

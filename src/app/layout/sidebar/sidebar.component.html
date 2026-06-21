@@ -1,6 +1,6 @@
 <nav class="app-sidebar">
   <ul class="menu-list">
-    @for (item of menuItems; track item.label) {
+    @for (item of menuItems(); track item.label) {
       <li class="menu-item" [class.has-children]="item.children">
 
         @if (!item.children) {
