@@ -1,0 +1,172 @@
+:host {
+  display: block;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.alterar-senha-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 2rem 1rem;
+  background: var(--p-surface-50);
+  box-sizing: border-box;
+}
+
+.alterar-senha-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  text-align: center;
+
+  @media (max-width: 520px) {
+    padding: 1.5rem 1rem;
+    border-radius: 0.75rem;
+  }
+
+  h2 {
+    font-size: 1.375rem;
+    color: var(--p-surface-800);
+    margin-bottom: 1.25rem;
+  }
+}
+
+.alterar-senha-logo {
+  margin-bottom: 1.5rem;
+
+  i {
+    font-size: 3rem;
+    color: var(--p-primary-color);
+    display: block;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+.form-alterar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  text-align: left;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-weight: 500;
+      color: var(--p-surface-700);
+    }
+  }
+}
+
+.field-error {
+  color: #e53e3e;
+  font-size: 0.8rem;
+}
+
+.forca-container {
+  margin-top: 0.5rem;
+}
+
+.forca-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.625rem;
+}
+
+.forca-barra {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+
+  .segmento {
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+    background: var(--p-surface-200);
+    transition: background 0.25s;
+
+    &.ativo-fraca { background: #dc2626; }
+    &.ativo-media { background: #f59e0b; }
+    &.ativo-forte { background: #16a34a; }
+  }
+}
+
+.forca-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &.label-invalida { color: var(--p-surface-400); }
+  &.label-fraca { color: #dc2626; }
+  &.label-media { color: #f59e0b; }
+  &.label-forte { color: #16a34a; }
+}
+
+.requisitos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--p-surface-500);
+
+    i { width: 14px; text-align: center; }
+
+    &.atendido { color: #16a34a; }
+
+    &.dica {
+      color: var(--p-surface-400);
+      font-style: italic;
+      margin-top: 0.125rem;
+    }
+  }
+}
+
+.politica-footer {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--p-surface-400);
+  border-top: 1px solid var(--p-surface-200);
+  padding-top: 0.5rem;
+}
+
+.form-actions {
+  margin-top: 0.25rem;
+}
+
+.voltar-footer {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--p-surface-200);
+  padding-top: 1rem;
+
+  a {
+    color: var(--p-surface-500);
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    &:hover {
+      color: var(--p-primary-color);
+    }
+  }
+}

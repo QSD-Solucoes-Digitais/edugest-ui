@@ -1,0 +1,133 @@
+<p-toast />
+<div class="alterar-senha-container">
+  <div class="alterar-senha-card">
+    <div class="alterar-senha-logo">
+      <i class="pi pi-graduation-cap"></i>
+      <h1>EduGest</h1>
+    </div>
+
+    @if (senhaProvisoria) {
+      <p-message
+        severity="warn"
+        styleClass="w-full mb-3"
+        text="Por segurança, você precisa definir uma nova senha antes de continuar."
+      />
+    }
+
+    <h2>{{ senhaProvisoria ? 'Definir nova senha' : 'Alterar senha' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="alterar()" class="form-alterar">
+      <div class="field">
+        <label for="senhaAtual">Senha atual</label>
+        <p-password
+          inputId="senhaAtual"
+          formControlName="senhaAtual"
+          placeholder="Sua senha atual"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          [invalid]="senhaAtualControl.invalid && senhaAtualControl.touched"
+        />
+        @if (senhaAtualControl.invalid && senhaAtualControl.touched) {
+          <small class="field-error">Senha atual é obrigatória</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="novaSenha">Nova senha</label>
+        <p-password
+          inputId="novaSenha"
+          formControlName="novaSenha"
+          placeholder="Sua nova senha"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          [invalid]="novaSenhaInvalida"
+        />
+        @if (novaSenhaControl.touched) {
+          @if (novaSenhaControl.hasError('required')) {
+            <small class="field-error">Nova senha é obrigatória</small>
+          } @else if (form.hasError('novaIgualAtual')) {
+            <small class="field-error">A nova senha deve ser diferente da senha atual</small>
+          }
+        }
+
+        <div class="forca-container">
+          <div class="forca-header">
+            <div class="forca-barra">
+              <div class="segmento" [ngClass]="segmento1Class()"></div>
+              <div class="segmento" [ngClass]="segmento2Class()"></div>
+              <div class="segmento" [ngClass]="segmento3Class()"></div>
+            </div>
+            <span class="forca-label" [ngClass]="forcaLabelClass()">{{ forcaLabel() }}</span>
+          </div>
+
+          <ul class="requisitos-lista">
+            <li [class.atendido]="temMinChar()">
+              <i class="pi" [ngClass]="temMinChar() ? 'pi-check-circle' : 'pi-circle'"></i>
+              Mínimo de 8 caracteres
+            </li>
+            <li [class.atendido]="temLetra()">
+              <i class="pi" [ngClass]="temLetra() ? 'pi-check-circle' : 'pi-circle'"></i>
+              Pelo menos uma letra
+            </li>
+            <li [class.atendido]="temNumero()">
+              <i class="pi" [ngClass]="temNumero() ? 'pi-check-circle' : 'pi-circle'"></i>
+              Pelo menos um número
+            </li>
+            <li class="dica">
+              <i class="pi pi-info-circle"></i>
+              Use 12+ caracteres com símbolos para maior segurança
+            </li>
+          </ul>
+
+          <small class="politica-footer">
+            Política de senha em conformidade com a ABNT NBR ISO/IEC 27002 e LGPD.
+          </small>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="confirmarSenha">Confirmar nova senha</label>
+        <p-password
+          inputId="confirmarSenha"
+          formControlName="confirmarSenha"
+          placeholder="Confirme sua nova senha"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          [invalid]="confirmarSenhaInvalida"
+        />
+        @if (confirmarSenhaControl.touched) {
+          @if (confirmarSenhaControl.hasError('required')) {
+            <small class="field-error">Confirmação de senha é obrigatória</small>
+          } @else if (form.hasError('senhasNaoConferem')) {
+            <small class="field-error">As senhas não conferem</small>
+          }
+        }
+      </div>
+
+      <div class="form-actions">
+        <p-button
+          type="submit"
+          label="Alterar senha"
+          icon="pi pi-check"
+          [loading]="carregando()"
+          [disabled]="botaoDesabilitado()"
+          styleClass="w-full"
+        />
+      </div>
+    </form>
+
+    @if (!senhaProvisoria) {
+      <div class="voltar-footer">
+        <a routerLink="/dashboard">
+          <i class="pi pi-arrow-left"></i> Voltar ao sistema
+        </a>
+      </div>
+    }
+  </div>
+</div>

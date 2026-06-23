@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -6,24 +6,30 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { AuthPainelMarcaComponent } from '../../components/auth-painel-marca/auth-painel-marca.component';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, PasswordModule, MessageModule],
+  imports: [ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, PasswordModule, MessageModule, IconFieldModule, InputIconModule, ToastModule, AuthPainelMarcaComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
   private auth = inject(AuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private messageService = inject(MessageService);
 
   form = this.fb.group({
     login: ['', [Validators.required]],
-    senha: ['', [Validators.required, Validators.minLength(6)]],
+    senha: ['', [Validators.required, Validators.minLength(8)]],
   });
 
   erro = signal<string | null>(null);
@@ -33,6 +39,14 @@ export class LoginComponent {
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.erro.set(null));
+  }
+
+  ngAfterViewInit(): void {
+    const mensagemSucesso = history.state?.mensagemSucesso;
+    if (mensagemSucesso) {
+      history.replaceState({}, '');
+      this.messageService.add({ severity: 'success', summary: 'Senha alterada', detail: mensagemSucesso, life: 5000 });
+    }
   }
 
   get loginInvalido(): boolean {
@@ -52,7 +66,7 @@ export class LoginComponent {
   get erroSenha(): string {
     const c = this.form.get('senha')!;
     if (c.hasError('required') || c.hasError('minlength')) {
-      return 'A senha deve ter no mínimo 6 caracteres';
+      return 'A senha deve ter no mínimo 8 caracteres';
     }
     return '';
   }

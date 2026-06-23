@@ -11,6 +11,7 @@ export interface UsuarioLogado {
   login: string;
   nome: string;
   perfil: PerfilUsuario;
+  senhaProvisoria: boolean;
 }
 
 interface LoginResponse {
@@ -21,6 +22,7 @@ interface JwtPayload {
   sub: string;
   nome: string;
   perfil: PerfilUsuario;
+  senhaProvisoria: boolean;
   exp: number;
 }
 
@@ -53,6 +55,11 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  encerrarSessao(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.usuarioLogado$.next(null);
+  }
+
   logoutPorExpiracao(): void {
     if (this._sessaoExpiradaNotificada) return;
     this._sessaoExpiradaNotificada = true;
@@ -82,11 +89,19 @@ export class AuthService {
     if (!token) return null;
     const payload = this.decodePayload(token);
     if (!payload) return null;
-    return { login: payload.sub, nome: payload.nome, perfil: payload.perfil };
+    return { login: payload.sub, nome: payload.nome, perfil: payload.perfil, senhaProvisoria: payload.senhaProvisoria ?? false };
   }
 
   recuperarSenha(email: string) {
     return this.http.post(`${this.url}/recuperar-senha`, { email });
+  }
+
+  alterarSenha(senhaAtual: string, novaSenha: string) {
+    return this.http.post(`${this.url}/alterar-senha`, { senhaAtual, novaSenha });
+  }
+
+  senhaEhProvisoria(): boolean {
+    return this.getPerfil()?.senhaProvisoria ?? false;
   }
 
   redefinirSenha(token: string, novaSenha: string) {

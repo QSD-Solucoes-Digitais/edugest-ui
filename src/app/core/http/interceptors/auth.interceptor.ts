@@ -2,8 +2,16 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../../auth/services/auth.service';
 
+const ROTAS_PUBLICAS = [
+  '/autenticacao/login',
+  '/autenticacao/recuperar-senha',
+  '/autenticacao/redefinir-senha',
+];
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.includes('/autenticacao/')) {
+  const ehRotaPublica = ROTAS_PUBLICAS.some(rota => req.url.includes(rota));
+
+  if (ehRotaPublica) {
     return next(req);
   }
 

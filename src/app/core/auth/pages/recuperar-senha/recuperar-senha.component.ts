@@ -4,12 +4,13 @@ import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { AuthPainelMarcaComponent } from '../../components/auth-painel-marca/auth-painel-marca.component';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-recuperar-senha',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, MessageModule],
+  imports: [ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, MessageModule, AuthPainelMarcaComponent],
   templateUrl: './recuperar-senha.component.html',
   styleUrl: './recuperar-senha.component.scss',
 })
