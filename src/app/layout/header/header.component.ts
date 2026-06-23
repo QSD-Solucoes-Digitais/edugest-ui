@@ -1,22 +1,28 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { TooltipModule } from 'primeng/tooltip';
+import { MenuModule, Menu } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../core/auth/services/auth.service';
 import { LayoutService } from '../../core/services/layout.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, ButtonModule, AvatarModule, BadgeModule, TooltipModule],
+  imports: [CommonModule, ButtonModule, AvatarModule, BadgeModule, TooltipModule, MenuModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   layout = inject(LayoutService);
   private auth = inject(AuthService);
+  private router = inject(Router);
+
+  private userMenuRef = viewChild<Menu>('userMenu');
 
   schoolName = 'Escola Municipal São José';
   notificationCount = 3;
@@ -44,7 +50,21 @@ export class HeaderComponent {
     return perfis[this.usuario()?.perfil ?? ''] ?? '';
   });
 
-  logout(): void {
-    this.auth.logout();
+  menuUsuario: MenuItem[] = [
+    {
+      label: 'Alterar senha',
+      icon: 'pi pi-key',
+      command: () => this.router.navigate(['/alterar-senha']),
+    },
+    { separator: true },
+    {
+      label: 'Sair',
+      icon: 'pi pi-sign-out',
+      command: () => this.auth.logout(),
+    },
+  ];
+
+  toggleMenu(event: Event): void {
+    this.userMenuRef()?.toggle(event);
   }
 }

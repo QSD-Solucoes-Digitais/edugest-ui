@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
+import { AuthPainelMarcaComponent } from '../../components/auth-painel-marca/auth-painel-marca.component';
 import { AuthService } from '../../services/auth.service';
 
 const senhasIguais: ValidatorFn = (group: AbstractControl) => {
@@ -15,7 +16,7 @@ const senhasIguais: ValidatorFn = (group: AbstractControl) => {
 @Component({
   selector: 'app-redefinir-senha',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, ButtonModule, PasswordModule, MessageModule],
+  imports: [ReactiveFormsModule, RouterModule, ButtonModule, PasswordModule, MessageModule, AuthPainelMarcaComponent],
   templateUrl: './redefinir-senha.component.html',
   styleUrl: './redefinir-senha.component.scss',
 })

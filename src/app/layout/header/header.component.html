@@ -29,7 +29,9 @@
       tooltipPosition="bottom"
     />
 
-    <div class="header-user">
+    <p-menu #userMenu [model]="menuUsuario" [popup]="true" appendTo="body" />
+
+    <div class="header-user" (click)="toggleMenu($event)">
       <div class="user-info">
         <span class="user-name">{{ nomeUsuario() }}</span>
         <span class="user-role">{{ perfilLabel() }}</span>
@@ -39,17 +41,7 @@
         shape="circle"
         styleClass="user-avatar"
       />
+      <i class="pi pi-chevron-down user-chevron"></i>
     </div>
-
-    <p-button
-      icon="pi pi-sign-out"
-      [rounded]="true"
-      [text]="true"
-      severity="secondary"
-      styleClass="header-btn"
-      pTooltip="Sair"
-      tooltipPosition="bottom"
-      (onClick)="logout()"
-    />
   </div>
 </header>

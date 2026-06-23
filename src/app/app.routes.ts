@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guards/auth.guard';
 import { roleGuard } from './core/auth/guards/role.guard';
+import { senhaProvisoriaChildGuard } from './core/auth/guards/senha-provisoria.guard';
 import { LayoutShellComponent } from './layout/layout-shell/layout-shell.component';
 
 export const routes: Routes = [
@@ -29,9 +30,18 @@ export const routes: Routes = [
       import('./shared/pages/erro-403/erro-403.component').then(m => m.Erro403Component),
   },
   {
+    path: 'alterar-senha',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./core/auth/pages/alterar-senha/alterar-senha.component').then(
+        m => m.AlterarSenhaComponent
+      ),
+  },
+  {
     path: '',
     component: LayoutShellComponent,
     canActivate: [authGuard],
+    canActivateChild: [senhaProvisoriaChildGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
