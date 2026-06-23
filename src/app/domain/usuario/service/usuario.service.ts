@@ -1,30 +1,39 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { Usuario, UsuarioInput } from '../model/usuario.model';
+import { Usuario, UsuarioInput, UsuarioFiltro } from '../model/usuario.model';
+import { Page } from '../../../core/models/page.model';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
   private http = inject(HttpClient);
   private url = `${environment.apiUrl}/usuarios`;
 
-  listar() {
-    return this.http.get<Usuario[]>(this.url);
+  listar(filtro?: UsuarioFiltro, page = 0, size = 10, sort = 'nome,asc') {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', sort);
+
+    if (filtro?.perfil) params = params.set('perfil', filtro.perfil);
+    if (filtro?.ativo !== undefined) params = params.set('ativo', String(filtro.ativo));
+
+    return this.http.get<Page<Usuario>>(this.url, { params });
   }
 
   buscarPorId(id: number) {
     return this.http.get<Usuario>(`${this.url}/${id}`);
   }
 
-  cadastrar(data: UsuarioInput) {
+  criar(data: UsuarioInput) {
     return this.http.post<Usuario>(this.url, data);
   }
 
-  atualizar(id: number, data: Partial<UsuarioInput>) {
+  atualizar(id: number, data: UsuarioInput) {
     return this.http.put<Usuario>(`${this.url}/${id}`, data);
   }
 
-  excluir(id: number) {
+  inativar(id: number) {
     return this.http.delete<void>(`${this.url}/${id}`);
   }
 }

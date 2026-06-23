@@ -42,60 +42,103 @@ export const routes: Routes = [
       },
       {
         path: 'responsaveis',
-        data: { breadcrumbs: [{ label: 'Responsáveis' }] },
-        loadComponent: () =>
-          import('./domain/responsavel/pages/responsavel-lista/responsavel-lista.component').then(
-            m => m.ResponsavelListaComponent
-          ),
-      },
-      {
-        path: 'responsaveis/novo',
-        data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Novo' }] },
-        loadComponent: () =>
-          import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
-            m => m.ResponsavelFormComponent
-          ),
-      },
-      {
-        path: 'responsaveis/:id/editar',
-        data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Editar' }] },
-        loadComponent: () =>
-          import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
-            m => m.ResponsavelFormComponent
-          ),
-      },
-      {
-        path: 'responsaveis/:id/detalhar',
-        data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Detalhes' }] },
-        loadComponent: () =>
-          import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
-            m => m.ResponsavelFormComponent
-          ),
+        canActivate: [roleGuard],
+        data: { perfis: ['ADMIN', 'SECRETARIA'] },
+        children: [
+          {
+            path: '',
+            data: { breadcrumbs: [{ label: 'Responsáveis' }] },
+            loadComponent: () =>
+              import('./domain/responsavel/pages/responsavel-lista/responsavel-lista.component').then(
+                m => m.ResponsavelListaComponent
+              ),
+          },
+          {
+            path: 'novo',
+            data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Novo' }] },
+            loadComponent: () =>
+              import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
+                m => m.ResponsavelFormComponent
+              ),
+          },
+          {
+            path: ':id/editar',
+            data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Editar' }] },
+            loadComponent: () =>
+              import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
+                m => m.ResponsavelFormComponent
+              ),
+          },
+          {
+            path: ':id/detalhar',
+            data: { breadcrumbs: [{ label: 'Responsáveis', routerLink: '/responsaveis' }, { label: 'Detalhes' }] },
+            loadComponent: () =>
+              import('./domain/responsavel/pages/responsavel-form/responsavel-form.component').then(
+                m => m.ResponsavelFormComponent
+              ),
+          },
+        ],
       },
       {
         path: 'alunos',
-        data: { breadcrumbs: [{ label: 'Alunos' }] },
-        loadComponent: () =>
-          import('./domain/aluno/pages/aluno-list/aluno-list.component').then(
-            m => m.AlunoListComponent
-          ),
+        canActivate: [roleGuard],
+        data: { perfis: ['ADMIN', 'SECRETARIA'] },
+        children: [
+          {
+            path: '',
+            data: { breadcrumbs: [{ label: 'Alunos' }] },
+            loadComponent: () =>
+              import('./domain/aluno/pages/aluno-list/aluno-list.component').then(
+                m => m.AlunoListComponent
+              ),
+          },
+        ],
       },
       {
         path: 'mensalidades',
-        data: { breadcrumbs: [{ label: 'Mensalidades' }] },
-        loadComponent: () =>
-          import('./domain/mensalidade/pages/mensalidade-list/mensalidade-list.component').then(
-            m => m.MensalidadeListComponent
-          ),
+        canActivate: [roleGuard],
+        data: { perfis: ['ADMIN', 'FINANCEIRO'] },
+        children: [
+          {
+            path: '',
+            data: { breadcrumbs: [{ label: 'Mensalidades' }] },
+            loadComponent: () =>
+              import('./domain/mensalidade/pages/mensalidade-list/mensalidade-list.component').then(
+                m => m.MensalidadeListComponent
+              ),
+          },
+        ],
       },
       {
         path: 'usuarios',
         canActivate: [roleGuard],
-        data: { perfis: ['ADMIN'], breadcrumbs: [{ label: 'Usuários' }] },
-        loadComponent: () =>
-          import('./domain/usuario/pages/usuario-list/usuario-list.component').then(
-            m => m.UsuarioListComponent
-          ),
+        data: { perfis: ['ADMIN'] },
+        children: [
+          {
+            path: '',
+            data: { breadcrumbs: [{ label: 'Usuários' }] },
+            loadComponent: () =>
+              import('./domain/usuario/pages/usuario-list/usuario-list.component').then(
+                m => m.UsuarioListComponent
+              ),
+          },
+          {
+            path: 'novo',
+            data: { breadcrumbs: [{ label: 'Usuários', routerLink: '/usuarios' }, { label: 'Novo' }] },
+            loadComponent: () =>
+              import('./domain/usuario/pages/usuario-form/usuario-form.component').then(
+                m => m.UsuarioFormComponent
+              ),
+          },
+          {
+            path: ':id/editar',
+            data: { breadcrumbs: [{ label: 'Usuários', routerLink: '/usuarios' }, { label: 'Editar' }] },
+            loadComponent: () =>
+              import('./domain/usuario/pages/usuario-form/usuario-form.component').then(
+                m => m.UsuarioFormComponent
+              ),
+          },
+        ],
       },
       { path: '**', redirectTo: 'dashboard' },
     ],

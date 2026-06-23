@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { BehaviorSubject, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
@@ -27,9 +28,12 @@ interface JwtPayload {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private messageService = inject(MessageService);
 
   private readonly TOKEN_KEY = 'edugest_token';
   private readonly url = `${environment.apiUrl}/autenticacao`;
+
+  private _sessaoExpiradaNotificada = false;
 
   usuarioLogado$ = new BehaviorSubject<UsuarioLogado | null>(this.getPerfil());
 
@@ -37,6 +41,7 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.url}/login`, { login, senha }).pipe(
       tap(res => {
         localStorage.setItem(this.TOKEN_KEY, res.token);
+        this._sessaoExpiradaNotificada = false;
         this.usuarioLogado$.next(this.getPerfil());
       })
     );
@@ -46,6 +51,18 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     this.usuarioLogado$.next(null);
     this.router.navigate(['/login']);
+  }
+
+  logoutPorExpiracao(): void {
+    if (this._sessaoExpiradaNotificada) return;
+    this._sessaoExpiradaNotificada = true;
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Sessão expirada',
+      detail: 'Sua sessão expirou. Faça login novamente.',
+      life: 4000,
+    });
+    this.logout();
   }
 
   getToken(): string | null {

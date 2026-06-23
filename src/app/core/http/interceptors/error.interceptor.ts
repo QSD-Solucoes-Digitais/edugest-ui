@@ -20,7 +20,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       if (status === 401) {
-        auth.logout();
+        auth.logoutPorExpiracao();
         return throwError(() => error);
       }
 
