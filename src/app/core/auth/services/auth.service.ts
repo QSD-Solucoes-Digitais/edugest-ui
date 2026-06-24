@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { BehaviorSubject, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { MSG } from '../../../shared/constants/messages';
 
 export type PerfilUsuario = 'ADMIN' | 'SECRETARIA' | 'FINANCEIRO';
 
@@ -66,7 +67,7 @@ export class AuthService {
     this.messageService.add({
       severity: 'warn',
       summary: 'Sessão expirada',
-      detail: 'Sua sessão expirou. Faça login novamente.',
+      detail: MSG.auth.sessaoExpirada,
       life: 4000,
     });
     this.logout();

@@ -12,6 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthPainelMarcaComponent } from '../../components/auth-painel-marca/auth-painel-marca.component';
 import { AuthService } from '../../services/auth.service';
+import { MSG } from '../../../../shared/constants/messages';
 
 @Component({
   selector: 'app-login',
@@ -66,7 +67,7 @@ export class LoginComponent implements AfterViewInit {
   get erroSenha(): string {
     const c = this.form.get('senha')!;
     if (c.hasError('required') || c.hasError('minlength')) {
-      return 'A senha deve ter no mínimo 8 caracteres';
+      return MSG.auth.senhaMinima;
     }
     return '';
   }
@@ -79,7 +80,7 @@ export class LoginComponent implements AfterViewInit {
     this.auth.login(login!, senha!).subscribe({
       next: () => this.router.navigate(['/dashboard']),
       error: () => {
-        this.erro.set('E-mail ou senha incorretos.');
+        this.erro.set(MSG.auth.loginIncorreto);
         this.carregando.set(false);
       },
     });

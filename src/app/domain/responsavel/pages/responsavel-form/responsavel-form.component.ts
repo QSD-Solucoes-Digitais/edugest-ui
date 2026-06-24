@@ -9,6 +9,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import {ResponsavelService} from '../../service/responsavel.service';
+import { MSG } from '../../../../shared/constants/messages';
 import {ResponsavelInput} from '../../model/responsavel.model';
 
 @Component({
@@ -104,7 +105,7 @@ export class ResponsavelFormComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
-          detail: `Responsável ${this.id() ? 'atualizado' : 'cadastrado'} com sucesso.`,
+          detail: this.id() ? MSG.responsavel.atualizadoSucesso : MSG.responsavel.cadastradoSucesso,
         });
         setTimeout(() => this.router.navigate(['/responsaveis']), 1500);
       },

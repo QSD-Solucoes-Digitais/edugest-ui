@@ -10,6 +10,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
 import { ResponsavelService } from '../../service/responsavel.service';
+import { MSG } from '../../../../shared/constants/messages';
 import { ResponsavelOutput } from '../../model/responsavel.model';
 
 @Component({
@@ -103,7 +104,7 @@ export class ResponsavelListaComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Excluído',
-          detail: 'Responsável excluído com sucesso.',
+          detail: MSG.responsavel.excluidoSucesso,
         });
         this.carregar(this.currentPage, this.rows(), this.sortField(), this.sortOrder(), this.currentFilters);
       },

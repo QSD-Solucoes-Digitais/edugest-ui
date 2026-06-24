@@ -6,10 +6,9 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
-import { ToastModule } from 'primeng/toast';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { MessageService } from 'primeng/api';
 import { UsuarioService } from '../../service/usuario.service';
+import { MSG } from '../../../../shared/constants/messages';
 import { UsuarioInput } from '../../model/usuario.model';
 import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
 
@@ -24,10 +23,8 @@ import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
     InputTextModule,
     SelectModule,
     CardModule,
-    ToastModule,
     ToggleSwitchModule,
   ],
-  providers: [MessageService],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.scss',
 })
@@ -36,7 +33,6 @@ export class UsuarioFormComponent implements OnInit {
   private service = inject(UsuarioService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private messageService = inject(MessageService);
 
   id = signal<number | null>(null);
   salvando = signal(false);
@@ -93,12 +89,6 @@ export class UsuarioFormComponent implements OnInit {
         this.carregando.set(false);
       },
       error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível carregar os dados do usuário.',
-          life: 4000,
-        });
         this.carregando.set(false);
       },
     });
@@ -124,15 +114,12 @@ export class UsuarioFormComponent implements OnInit {
             toastSeverity: 'success',
             toastSummary: this.modoEdicao ? 'Sucesso' : 'Usuário criado',
             toastDetail: this.modoEdicao
-              ? 'Usuário atualizado com sucesso.'
-              : 'Uma senha temporária foi enviada para o e-mail cadastrado.',
+              ? MSG.usuario.atualizadoSucesso
+              : MSG.usuario.criadoSucesso,
           },
         });
       },
-      error: (err) => {
-        const detalhe = err?.error?.message
-          ?? (this.modoEdicao ? 'Erro ao atualizar usuário.' : 'Erro ao criar usuário.');
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: detalhe, life: 4000 });
+      error: () => {
         this.salvando.set(false);
       },
     });
@@ -148,14 +135,14 @@ export class UsuarioFormComponent implements OnInit {
     if (!control) return '';
     if (control.hasError('required')) {
       const msgs: Record<string, string> = {
-        nome:   'Nome é obrigatório',
-        login:  'E-mail é obrigatório',
-        perfil: 'Selecione um perfil',
+        nome:   MSG.usuario.nomeObrigatorio,
+        login:  MSG.usuario.emailObrigatorio,
+        perfil: MSG.usuario.perfilObrigatorio,
       };
       return msgs[campo] ?? 'Campo obrigatório';
     }
-    if (control.hasError('minlength')) return 'Nome deve ter ao menos 3 caracteres';
-    if (control.hasError('email'))     return 'Informe um e-mail válido';
+    if (control.hasError('minlength')) return MSG.usuario.nomeMinimo;
+    if (control.hasError('email'))     return MSG.usuario.emailInvalido;
     return '';
   }
 }
