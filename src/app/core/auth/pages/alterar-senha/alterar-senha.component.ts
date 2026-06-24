@@ -10,6 +10,7 @@ import { PasswordModule } from 'primeng/password';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../services/auth.service';
+import { MSG } from '../../../../shared/constants/messages';
 
 function validarSenhasGrupo(group: AbstractControl): ValidationErrors | null {
   const atual = (group.get('senhaAtual')?.value as string) ?? '';
@@ -126,16 +127,16 @@ export class AlterarSenhaComponent {
         if (this.senhaProvisoria) {
           this.auth.encerrarSessao();
           this.router.navigate(['/login'], {
-            state: { mensagemSucesso: 'Senha alterada com sucesso. Faça login novamente com sua nova senha.' },
+            state: { mensagemSucesso: MSG.senha.alteradaProvisoria },
           });
         } else {
           this.router.navigate(['/dashboard'], {
-            state: { mensagemSucesso: 'Sua senha foi alterada com sucesso.' },
+            state: { mensagemSucesso: MSG.senha.alteradaSucesso },
           });
         }
       },
       error: (err) => {
-        const detail = err?.error?.title ?? 'Erro ao alterar senha. Tente novamente.';
+        const detail = err?.error?.title ?? MSG.senha.erroFallback;
         this.messageService.add({ severity: 'error', summary: 'Erro ao alterar senha', detail, life: 5000 });
         this.carregando.set(false);
       },

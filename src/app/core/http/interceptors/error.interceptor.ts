@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
+import { MSG } from '../../../shared/constants/messages';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
@@ -31,8 +32,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       const detail =
         status === 500
-          ? 'Erro interno do servidor. Tente novamente mais tarde.'
-          : (error?.error?.title ?? 'Ocorreu um erro inesperado. Tente novamente.');
+          ? MSG.sistema.erroInterno
+          : (error?.error?.title ?? MSG.sistema.erroInesperado);
 
       messageService.add({ severity: 'error', summary: 'Erro', detail });
       return throwError(() => error);

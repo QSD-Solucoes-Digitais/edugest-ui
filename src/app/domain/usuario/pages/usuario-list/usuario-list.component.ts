@@ -7,9 +7,9 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { MSG } from '../../../../shared/constants/messages';
 import { UsuarioService } from '../../service/usuario.service';
 import { Usuario, UsuarioFiltro } from '../../model/usuario.model';
 import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
@@ -25,10 +25,9 @@ import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
     SelectModule,
     TagModule,
     ConfirmDialogModule,
-    ToastModule,
     TooltipModule,
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.scss',
 })
@@ -67,6 +66,7 @@ export class UsuarioListComponent implements OnInit {
   ngOnInit() {
     const state = history.state;
     if (state?.toastSeverity) {
+      history.replaceState({}, '');
       this.messageService.add({
         severity: state.toastSeverity,
         summary:  state.toastSummary,
@@ -137,15 +137,12 @@ export class UsuarioListComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
-          detail: `Usuário "${usuario.nome}" inativado.`,
+          detail: MSG.usuario.inativadoSucesso(usuario.nome),
           life: 4000,
         });
         this.carregarUsuarios(this.paginaAtual);
       },
-      error: (err) => {
-        const detalhe = err?.error?.message ?? 'Erro ao inativar usuário.';
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: detalhe, life: 4000 });
-      },
+      error: () => {},
     });
   }
 
