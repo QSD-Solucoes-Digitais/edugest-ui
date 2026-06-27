@@ -10,6 +10,8 @@ import { PasswordModule } from 'primeng/password';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../services/auth.service';
+import { FormErrorService } from '../../../../shared/services/form-error.service';
+import { CampoErroMensagemPipe } from '../../../../shared/pipes/campo-erro-mensagem.pipe';
 import { MSG } from '../../../../shared/constants/messages';
 
 function validarSenhasGrupo(group: AbstractControl): ValidationErrors | null {
@@ -25,7 +27,7 @@ function validarSenhasGrupo(group: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-alterar-senha',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, NgClass, ButtonModule, MessageModule, PasswordModule, ToastModule],
+  imports: [ReactiveFormsModule, RouterModule, NgClass, ButtonModule, MessageModule, PasswordModule, ToastModule, CampoErroMensagemPipe],
   templateUrl: './alterar-senha.component.html',
   styleUrl: './alterar-senha.component.scss',
 })
@@ -34,6 +36,7 @@ export class AlterarSenhaComponent {
   private router = inject(Router);
   private messageService = inject(MessageService);
   private fb = inject(FormBuilder);
+  private formErrorService = inject(FormErrorService);
 
   senhaProvisoria = this.auth.senhaEhProvisoria();
   carregando = signal(false);
@@ -136,9 +139,11 @@ export class AlterarSenhaComponent {
         }
       },
       error: (err) => {
-        const detail = err?.error?.title ?? MSG.senha.erroFallback;
-        this.messageService.add({ severity: 'error', summary: 'Erro ao alterar senha', detail, life: 5000 });
         this.carregando.set(false);
+        const mensagem = this.formErrorService.tratar(err, this.form);
+        if (mensagem) {
+          this.messageService.add({ severity: 'error', summary: 'Erro ao alterar senha', detail: mensagem, life: 5000 });
+        }
       },
     });
   }

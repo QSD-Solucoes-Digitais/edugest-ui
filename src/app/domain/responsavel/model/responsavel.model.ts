@@ -1,6 +1,6 @@
 import { EnderecoInput, EnderecoOutput } from './endereco.model';
-
-export type StatusResponsavel = 'ATIVO' | 'INATIVO';
+import { Status } from '../../../core/models/status.model';
+export type { Status };
 
 export interface ResponsavelOutput {
   id: number;
@@ -8,7 +8,7 @@ export interface ResponsavelOutput {
   cpf: string;
   telefone: string;
   email: string;
-  status: StatusResponsavel;
+  status: Status;
   endereco: EnderecoOutput;
 }
 
@@ -17,6 +17,6 @@ export interface ResponsavelInput {
   cpf: string;
   telefone: string;
   email: string;
-  status: StatusResponsavel;
+  status: Status;
   endereco: EnderecoInput;
 }

@@ -31,6 +31,12 @@ export const MSG = {
   responsavel: {
     cadastradoSucesso: 'Responsável cadastrado com sucesso.',
     atualizadoSucesso: 'Responsável atualizado com sucesso.',
-    excluidoSucesso: 'Responsável excluído com sucesso.',
+    inativadoSucesso: 'Responsável inativado com sucesso.',
+  },
+
+  aluno: {
+    cadastradoSucesso: 'Aluno cadastrado com sucesso.',
+    atualizadoSucesso: 'Aluno atualizado com sucesso.',
+    inativadoSucesso: 'Aluno inativado com sucesso.',
   },
 };

@@ -2,37 +2,46 @@
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">Gestão de Usuários</h1>
-    <p class="page-subtitle">Gerencie os acessos ao sistema</p>
+    <h1 class="page-title">Alunos</h1>
+    <p class="page-subtitle">Gerencie os alunos cadastrados</p>
   </div>
-  <p-button label="Novo Usuário" icon="pi pi-plus" (onClick)="novoUsuario()" />
+  <p-button
+    label="Novo aluno"
+    icon="pi pi-plus"
+    routerLink="/alunos/novo"
+  />
 </div>
 
 <div class="filters-card">
   <form [formGroup]="filtroForm" class="formgrid grid">
-    <div class="field col-4">
+    <div class="field col-3">
       <label>Nome</label>
       <input pInputText formControlName="nome" placeholder="Filtrar por nome" class="w-full" />
     </div>
-    <div class="field col-4">
-      <label>Perfil</label>
-      <p-select
-        formControlName="perfil"
-        [options]="opcioesPerfil"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Todos os perfis"
+    <div class="field col-3">
+      <label>Matrícula</label>
+      <input pInputText formControlName="matricula" placeholder="Ex: 20260001" class="w-full" />
+    </div>
+    <div class="field col-3">
+      <label>Responsável</label>
+      <p-autocomplete
+        formControlName="responsavel"
+        [suggestions]="sugestoesResponsaveis()"
+        (completeMethod)="buscarResponsaveis($event)"
+        optionLabel="nome"
+        placeholder="Buscar responsável"
         styleClass="w-full"
       />
     </div>
-    <div class="field col-4">
+    <div class="field col-3">
       <label>Status</label>
       <p-select
-        formControlName="ativo"
+        formControlName="status"
         [options]="opcoesStatus"
         optionLabel="label"
         optionValue="value"
         placeholder="Todos os status"
+        [showClear]="true"
         styleClass="w-full"
       />
     </div>
@@ -44,60 +53,61 @@
 </div>
 
 <p-table
-  [value]="usuarios()"
-  [lazy]="true"
+  [value]="alunos()"
   [loading]="carregando()"
-  [totalRecords]="totalRegistros()"
-  [rows]="rows()"
-  [rowsPerPageOptions]="[10, 25, 50]"
+  [lazy]="true"
   [paginator]="true"
+  [rows]="rows()"
+  [totalRecords]="totalRecords()"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  sortField="nome"
+  [sortOrder]="1"
   (onLazyLoad)="onCarregarDados($event)"
   stripedRows
 >
   <ng-template pTemplate="header">
     <tr>
-      <th>Nome</th>
-      <th>E-mail</th>
-      <th>Perfil</th>
-      <th>Status</th>
-      <th>Criado em</th>
+      <th>Matrícula</th>
+      <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
+      <th>Data de nascimento</th>
+      <th>Responsável</th>
+      <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
       <th style="width: 7rem">Ações</th>
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body" let-usuario>
+  <ng-template pTemplate="body" let-aluno>
     <tr>
-      <td class="nome-cell">
-        <div class="user-info">
-          <div class="user-avatar">{{ usuario.nome.charAt(0).toUpperCase() }}</div>
-          <span>{{ usuario.nome }}</span>
+      <td>
+        <span >
+          {{ aluno.matricula }}
+        </span>
+      </td>
+      <td>
+        <div class="nome-cell">
+          <p-avatar [label]="aluno.nome.charAt(0)" shape="circle" />
+          <span>{{ aluno.nome }}</span>
         </div>
       </td>
-      <td class="email-cell">{{ usuario.login }}</td>
+      <td>{{ formatarData(aluno.dataNascimento) }}</td>
+      <td>{{ aluno.responsavelNome }}</td>
       <td>
         <p-tag
-          [value]="labelPerfil(usuario.perfil)"
-          [severity]="severidadePerfil(usuario.perfil)"
+          [value]="aluno.status === 'ATIVO' ? 'Ativo' : 'Inativo'"
+          [severity]="aluno.status === 'ATIVO' ? 'success' : 'danger'"
         />
       </td>
       <td>
-        <p-tag
-          [value]="usuario.ativo ? 'Ativo' : 'Inativo'"
-          [severity]="usuario.ativo ? 'success' : 'danger'"
-        />
-      </td>
-      <td class="date-cell">{{ usuario.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
-      <td>
-        <div class="actions-cell">
+        <div class="flex gap-1">
           <p-button
             icon="pi pi-eye"
             [rounded]="true"
             [text]="true"
             size="small"
             severity="info"
+            [routerLink]="['/alunos', aluno.id, 'detalhar']"
             pTooltip="Detalhar"
             tooltipPosition="top"
-            (onClick)="detalharUsuario(usuario)"
           />
           <p-button
             icon="pi pi-pencil"
@@ -105,11 +115,11 @@
             [text]="true"
             size="small"
             severity="secondary"
+            [routerLink]="['/alunos', aluno.id, 'editar']"
             pTooltip="Editar"
             tooltipPosition="top"
-            (onClick)="editarUsuario(usuario)"
           />
-          @if (usuario.ativo) {
+          @if (aluno.status === 'ATIVO') {
             <p-button
               icon="pi pi-ban"
               [rounded]="true"
@@ -118,7 +128,7 @@
               severity="danger"
               pTooltip="Inativar"
               tooltipPosition="top"
-              (onClick)="confirmarInativacao(usuario)"
+              (onClick)="confirmarInativacao(aluno)"
             />
           }
         </div>
@@ -131,7 +141,8 @@
       <td colspan="6">
         <div class="empty-state">
           <i class="pi pi-users"></i>
-          <span>Nenhum usuário encontrado</span>
+          <p class="empty-title">Nenhum aluno cadastrado</p>
+          <p class="empty-subtitle">Clique em "Novo aluno" para começar.</p>
         </div>
       </td>
     </tr>

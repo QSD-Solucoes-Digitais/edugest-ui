@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
@@ -23,6 +24,7 @@ import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
     TableModule,
     ButtonModule,
     SelectModule,
+    InputTextModule,
     TagModule,
     ConfirmDialogModule,
     TooltipModule,
@@ -59,6 +61,7 @@ export class UsuarioListComponent implements OnInit {
   ];
 
   filtroForm = this.fb.group({
+    nome:   [null as string | null],
     perfil: [null as PerfilUsuario | null],
     ativo:  [null as boolean | null],
   });
@@ -81,6 +84,7 @@ export class UsuarioListComponent implements OnInit {
     this.carregando.set(true);
     const f = this.filtroForm.value;
     const filtro: UsuarioFiltro = {};
+    if (f.nome)   filtro.nome = f.nome;
     if (f.perfil) filtro.perfil = f.perfil;
     if (f.ativo !== null && f.ativo !== undefined) filtro.ativo = f.ativo;
 
@@ -113,6 +117,10 @@ export class UsuarioListComponent implements OnInit {
 
   novoUsuario() {
     this.router.navigate(['/usuarios/novo']);
+  }
+
+  detalharUsuario(usuario: Usuario) {
+    this.router.navigate(['/usuarios', usuario.id, 'detalhar']);
   }
 
   editarUsuario(usuario: Usuario) {

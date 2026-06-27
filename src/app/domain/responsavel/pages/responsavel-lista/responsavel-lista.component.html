@@ -1,4 +1,3 @@
-<p-toast />
 <p-confirmDialog />
 
 <div class="page-header">
@@ -13,6 +12,34 @@
   />
 </div>
 
+<div class="filters-card">
+  <form [formGroup]="filtroForm" class="formgrid grid">
+    <div class="field col-4">
+      <label>Nome</label>
+      <input pInputText formControlName="nome" placeholder="Filtrar por nome" class="w-full" />
+    </div>
+    <div class="field col-4">
+      <label>CPF</label>
+      <input pInputText formControlName="cpf" placeholder="Filtrar por CPF" class="w-full" />
+    </div>
+    <div class="field col-4">
+      <label>Status</label>
+      <p-select
+        formControlName="status"
+        [options]="opcoesStatus"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos os status"
+        styleClass="w-full"
+      />
+    </div>
+    <div class="filter-actions col-12">
+      <p-button label="Filtrar" icon="pi pi-search" (onClick)="filtrar()" />
+      <p-button label="Limpar" icon="pi pi-times" [outlined]="true" (onClick)="limparFiltros()" />
+    </div>
+  </form>
+</div>
+
 <p-table
   [value]="responsaveis()"
   [loading]="carregando()"
@@ -21,10 +48,9 @@
   [rows]="rows()"
   [totalRecords]="totalRecords()"
   [rowsPerPageOptions]="[10, 25, 50]"
-  [sortField]="sortField()"
-  [sortOrder]="sortOrder()"
-  [filterDelay]="500"
-  (onLazyLoad)="onLazyLoad($event)"
+  sortField="nome"
+  [sortOrder]="1"
+  (onLazyLoad)="onCarregarDados($event)"
   stripedRows
 >
   <ng-template pTemplate="header">
@@ -34,17 +60,6 @@
       <th pSortableColumn="telefone">Telefone <p-sortIcon field="telefone" /></th>
       <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
       <th style="width: 8rem">Ações</th>
-    </tr>
-    <tr>
-      <th>
-        <p-columnFilter type="text" field="nome" [showMenu]="false" placeholder="Filtrar por nome" />
-      </th>
-      <th>
-        <p-columnFilter type="text" field="cpf" [showMenu]="false" placeholder="Filtrar por CPF" />
-      </th>
-      <th></th>
-      <th></th>
-      <th></th>
     </tr>
   </ng-template>
 
@@ -86,16 +101,18 @@
             pTooltip="Editar"
             tooltipPosition="top"
           />
-          <p-button
-            icon="pi pi-trash"
-            [rounded]="true"
-            [text]="true"
-            size="small"
-            severity="danger"
-            (onClick)="confirmarExclusao(responsavel)"
-            pTooltip="Excluir"
-            tooltipPosition="top"
-          />
+          @if (responsavel.status === 'ATIVO') {
+            <p-button
+              icon="pi pi-ban"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="danger"
+              pTooltip="Inativar"
+              tooltipPosition="top"
+              (onClick)="confirmarInativacao(responsavel)"
+            />
+          }
         </div>
       </td>
     </tr>
