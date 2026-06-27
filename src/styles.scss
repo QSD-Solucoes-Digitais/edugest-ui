@@ -20,3 +20,25 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+// Campos com erro (validação client-side ou erro inline da API)
+input.p-inputtext.ng-touched.ng-invalid,
+.ng-touched.ng-invalid > .p-inputtext,
+p-select.ng-touched.ng-invalid,
+p-autocomplete.ng-touched.ng-invalid .p-autocomplete-input {
+  border-color: #A32D2D !important;
+  background-color: #FCEBEB !important;
+}
+
+.field-error-msg {
+  font-size: 11px;
+  color: #A32D2D;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+
+  i {
+    font-size: 12px;
+  }
+}

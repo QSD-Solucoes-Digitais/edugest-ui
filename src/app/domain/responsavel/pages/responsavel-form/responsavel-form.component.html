@@ -29,8 +29,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalid('nome')"
         />
-        @if (isInvalid('nome')) {
-          <small class="p-error">Nome é obrigatório.</small>
+        @if (form.get('nome') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -44,8 +46,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalid('cpf')"
         />
-        @if (isInvalid('cpf')) {
-          <small class="p-error">CPF inválido ou obrigatório.</small>
+        @if (form.get('cpf') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -59,8 +63,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalid('telefone')"
         />
-        @if (isInvalid('telefone')) {
-          <small class="p-error">Telefone é obrigatório.</small>
+        @if (form.get('telefone') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -74,8 +80,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalid('email')"
         />
-        @if (isInvalid('email')) {
-          <small class="p-error">E-mail inválido ou obrigatório.</small>
+        @if (form.get('email') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -104,11 +112,19 @@
           id="cep"
           formControlName="cep"
           placeholder="00000-000"
+          maxlength="9"
           class="w-full"
           [class.ng-invalid]="isInvalidEndereco('cep')"
+          (input)="onCepChange($any($event.target).value)"
         />
-        @if (isInvalidEndereco('cep')) {
-          <small class="p-error">CEP deve estar no formato 00000-000.</small>
+        @if (buscandoCep()) {
+          <small>Buscando CEP...</small>
+        } @else if (cepNaoEncontrado()) {
+          <small class="p-error">CEP não encontrado. Preencha o endereço manualmente.</small>
+        } @else if (form.get('endereco.cep') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -122,14 +138,17 @@
           class="w-full"
           [class.ng-invalid]="isInvalidEndereco('logradouro')"
         />
-        @if (isInvalidEndereco('logradouro')) {
-          <small class="p-error">Logradouro é obrigatório.</small>
+        @if (form.get('endereco.logradouro') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
       <div class="field col-2">
         <label for="numero">Número *</label>
         <input
+          #numeroInput
           pInputText
           id="numero"
           formControlName="numero"
@@ -137,8 +156,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalidEndereco('numero')"
         />
-        @if (isInvalidEndereco('numero')) {
-          <small class="p-error">Obrigatório.</small>
+        @if (form.get('endereco.numero') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -163,8 +184,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalidEndereco('bairro')"
         />
-        @if (isInvalidEndereco('bairro')) {
-          <small class="p-error">Bairro é obrigatório.</small>
+        @if (form.get('endereco.bairro') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -178,8 +201,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalidEndereco('cidade')"
         />
-        @if (isInvalidEndereco('cidade')) {
-          <small class="p-error">Cidade é obrigatória.</small>
+        @if (form.get('endereco.cidade') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -193,9 +218,12 @@
           maxlength="2"
           class="w-full"
           [class.ng-invalid]="isInvalidEndereco('uf')"
+          (input)="converterUfMaiusculo($event)"
         />
-        @if (isInvalidEndereco('uf')) {
-          <small class="p-error">Obrigatório.</small>
+        @if (form.get('endereco.uf') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -215,6 +243,7 @@
         [label]="id() ? 'Salvar alterações' : 'Cadastrar responsável'"
         icon="pi pi-check"
         [loading]="salvando()"
+        [disabled]="form.invalid || salvando()"
       />
     }
   </div>

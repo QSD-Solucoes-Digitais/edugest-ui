@@ -53,8 +53,8 @@ export class SidebarComponent implements OnInit {
       allowedPerfis: ['ADMIN', 'SECRETARIA'],
       expanded: false,
       children: [
-        { label: 'Cadastrar', icon: 'pi pi-plus', route: '/alunos/novo', disabled: true },
-        { label: 'Consultar', icon: 'pi pi-list', route: '/alunos',      disabled: true },
+        { label: 'Cadastrar', icon: 'pi pi-plus', route: '/alunos/novo' },
+        { label: 'Consultar', icon: 'pi pi-list', route: '/alunos' },
       ],
     },
     {

@@ -27,8 +27,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalid('nome')"
         />
-        @if (isInvalid('nome')) {
-          <small class="p-error">{{ erroMensagem('nome') }}</small>
+        @if (form.get('nome') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -42,8 +44,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalid('login')"
         />
-        @if (isInvalid('login')) {
-          <small class="p-error">{{ erroMensagem('login') }}</small>
+        @if (form.get('login') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
         @if (!modoEdicao) {
           <small class="campo-hint">
@@ -65,8 +69,10 @@
           class="w-full"
           [class.ng-invalid]="isInvalid('perfil')"
         />
-        @if (isInvalid('perfil')) {
-          <small class="p-error">{{ erroMensagem('perfil') }}</small>
+        @if (form.get('perfil') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
         }
       </div>
 
@@ -85,19 +91,21 @@
 
   <div class="form-actions">
     <p-button
-      label="Cancelar"
+      [label]="modoDetalhe() ? 'Voltar' : 'Cancelar'"
       severity="secondary"
       [text]="true"
       type="button"
       routerLink="/usuarios"
     />
-    <p-button
-      type="submit"
-      [label]="labelBotaoSalvar"
-      icon="pi pi-check"
-      [loading]="salvando()"
-      [disabled]="form.invalid || salvando()"
-    />
+    @if (!modoDetalhe()) {
+      <p-button
+        type="submit"
+        [label]="labelBotaoSalvar"
+        icon="pi pi-check"
+        [loading]="salvando()"
+        [disabled]="form.invalid || salvando()"
+      />
+    }
   </div>
 
 </form>

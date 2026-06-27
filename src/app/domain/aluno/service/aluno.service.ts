@@ -1,35 +1,28 @@
 import { Injectable, inject } from '@angular/core';
-import { AlunoForm } from '../model/aluno.model';
-import { map } from 'rxjs';
-import {AlunoRepository} from '../repository/aluno.repository';
+import { AlunoInput } from '../model/aluno.model';
+import { AlunoRepository } from '../repository/aluno.repository';
 
 @Injectable({ providedIn: 'root' })
 export class AlunoService {
   private repo = inject(AlunoRepository);
 
-  listar() {
-    return this.repo.findAll();
+  listar(page = 0, size = 10, sort = 'nome,asc', filters: Record<string, string> = {}) {
+    return this.repo.findAll(page, size, sort, filters);
   }
 
-  listarAtivos() {
-    return this.repo.findAll().pipe(
-      map(alunos => alunos.filter(a => a.ativo))
-    );
-  }
-
-  buscarPorId(id: string) {
+  buscarPorId(id: number) {
     return this.repo.findById(id);
   }
 
-  cadastrar(data: AlunoForm) {
+  cadastrar(data: AlunoInput) {
     return this.repo.create(data);
   }
 
-  atualizar(id: string, data: Partial<AlunoForm>) {
+  atualizar(id: number, data: AlunoInput) {
     return this.repo.update(id, data);
   }
 
-  remover(id: string) {
+  inativar(id: number) {
     return this.repo.remove(id);
   }
 }

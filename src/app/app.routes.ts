@@ -102,6 +102,30 @@ export const routes: Routes = [
                 m => m.AlunoListComponent
               ),
           },
+          {
+            path: 'novo',
+            data: { breadcrumbs: [{ label: 'Alunos', routerLink: '/alunos' }, { label: 'Novo' }] },
+            loadComponent: () =>
+              import('./domain/aluno/pages/aluno-form/aluno-form.component').then(
+                m => m.AlunoFormComponent
+              ),
+          },
+          {
+            path: ':id/editar',
+            data: { breadcrumbs: [{ label: 'Alunos', routerLink: '/alunos' }, { label: 'Editar' }] },
+            loadComponent: () =>
+              import('./domain/aluno/pages/aluno-form/aluno-form.component').then(
+                m => m.AlunoFormComponent
+              ),
+          },
+          {
+            path: ':id/detalhar',
+            data: { breadcrumbs: [{ label: 'Alunos', routerLink: '/alunos' }, { label: 'Detalhes' }] },
+            loadComponent: () =>
+              import('./domain/aluno/pages/aluno-form/aluno-form.component').then(
+                m => m.AlunoFormComponent
+              ),
+          },
         ],
       },
       {
@@ -143,6 +167,14 @@ export const routes: Routes = [
           {
             path: ':id/editar',
             data: { breadcrumbs: [{ label: 'Usuários', routerLink: '/usuarios' }, { label: 'Editar' }] },
+            loadComponent: () =>
+              import('./domain/usuario/pages/usuario-form/usuario-form.component').then(
+                m => m.UsuarioFormComponent
+              ),
+          },
+          {
+            path: ':id/detalhar',
+            data: { breadcrumbs: [{ label: 'Usuários', routerLink: '/usuarios' }, { label: 'Detalhes' }] },
             loadComponent: () =>
               import('./domain/usuario/pages/usuario-form/usuario-form.component').then(
                 m => m.UsuarioFormComponent

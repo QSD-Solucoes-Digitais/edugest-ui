@@ -18,6 +18,7 @@ export interface UsuarioInput {
 }
 
 export interface UsuarioFiltro {
+  nome?: string;
   perfil?: PerfilUsuario;
   ativo?: boolean;
 }

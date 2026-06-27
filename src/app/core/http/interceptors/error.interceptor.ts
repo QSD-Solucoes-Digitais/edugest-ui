@@ -30,6 +30,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
+      if (status === 400) {
+        return throwError(() => error);
+      }
+
       const detail =
         status === 500
           ? MSG.sistema.erroInterno

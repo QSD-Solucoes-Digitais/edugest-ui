@@ -15,6 +15,7 @@ export class UsuarioService {
       .set('size', size)
       .set('sort', sort);
 
+    if (filtro?.nome)   params = params.set('nome', filtro.nome);
     if (filtro?.perfil) params = params.set('perfil', filtro.perfil);
     if (filtro?.ativo !== undefined) params = params.set('ativo', String(filtro.ativo));
 

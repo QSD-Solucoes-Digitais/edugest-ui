@@ -1,14 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { AvatarModule } from 'primeng/avatar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ResponsavelService } from '../../service/responsavel.service';
 import { MSG } from '../../../../shared/constants/messages';
 import { ResponsavelOutput } from '../../model/responsavel.model';
@@ -19,64 +21,85 @@ import { ResponsavelOutput } from '../../model/responsavel.model';
   imports: [
     CommonModule,
     RouterModule,
+    ReactiveFormsModule,
     ButtonModule,
     TableModule,
+    InputTextModule,
+    SelectModule,
     AvatarModule,
     ConfirmDialogModule,
-    ToastModule,
     TooltipModule,
     TagModule,
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
   templateUrl: './responsavel-lista.component.html',
   styleUrl: './responsavel-lista.component.scss',
 })
-export class ResponsavelListaComponent {
+export class ResponsavelListaComponent implements OnInit {
   private service = inject(ResponsavelService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
+  private fb = inject(FormBuilder);
 
   responsaveis = signal<ResponsavelOutput[]>([]);
   totalRecords = signal(0);
   rows = signal(10);
-  sortField = signal('nome');
-  sortOrder = signal(1);
   carregando = signal(false);
+  paginaAtual = signal(0);
 
-  private currentPage = 0;
-  private currentFilters: Record<string, string> = {};
+  opcoesStatus = [
+    { label: 'Ativo',   value: 'ATIVO' },
+    { label: 'Inativo', value: 'INATIVO' },
+  ];
 
-  onLazyLoad(event: TableLazyLoadEvent) {
-    const rows = event.rows ?? this.rows();
-    const page = Math.floor((event.first ?? 0) / rows);
-    const sortField = (event.sortField as string) ?? this.sortField();
-    const sortOrder = event.sortOrder ?? this.sortOrder();
+  filtroForm = this.fb.group({
+    nome:   [''],
+    cpf:    [''],
+    status: [null as string | null],
+  });
 
-    const rawFilters = (event.filters ?? {}) as Record<string, any>;
-    const filters: Record<string, string> = {};
-    for (const [field, meta] of Object.entries(rawFilters)) {
-      const value = Array.isArray(meta) ? meta[0]?.value : meta?.value;
-      if (value) filters[field] = value;
+  ngOnInit() {
+    const state = history.state;
+    if (state?.toastSeverity) {
+      history.replaceState({}, '');
+      this.messageService.add({
+        severity: state.toastSeverity,
+        summary:  state.toastSummary,
+        detail:   state.toastDetail,
+        life:     4000,
+      });
     }
-
-    this.currentPage = page;
-    this.currentFilters = filters;
-    this.rows.set(rows);
-    this.sortField.set(sortField);
-    this.sortOrder.set(sortOrder);
-    this.carregar(page, rows, sortField, sortOrder, filters);
+    this.carregarDados();
   }
 
-  private carregar(
-    page: number,
-    size: number,
-    sortField: string,
-    sortOrder: number,
-    filters: Record<string, string> = {}
-  ) {
-    const sort = `${sortField},${sortOrder === 1 ? 'asc' : 'desc'}`;
+  onCarregarDados(event: TableLazyLoadEvent) {
+    const rows = event.rows ?? this.rows();
+    const pagina = Math.floor((event.first ?? 0) / rows);
+    this.rows.set(rows);
+    this.paginaAtual.set(pagina);
+    this.carregarDados(pagina);
+  }
+
+  filtrar() {
+    this.paginaAtual.set(0);
+    this.carregarDados(0);
+  }
+
+  limparFiltros() {
+    this.filtroForm.reset();
+    this.paginaAtual.set(0);
+    this.carregarDados(0);
+  }
+
+  private carregarDados(page = 0) {
     this.carregando.set(true);
-    this.service.listar(page, size, sort, filters).subscribe({
+    const f = this.filtroForm.value;
+    const filters: Record<string, string> = {};
+    if (f.nome)   filters['nome']   = f.nome;
+    if (f.cpf)    filters['cpf']    = f.cpf;
+    if (f.status) filters['status'] = f.status;
+
+    this.service.listar(page, this.rows(), 'nome,asc', filters).subscribe({
       next: data => {
         this.responsaveis.set(data.content);
         this.totalRecords.set(data.totalElements);
@@ -86,28 +109,30 @@ export class ResponsavelListaComponent {
     });
   }
 
-  confirmarExclusao(responsavel: ResponsavelOutput) {
+  confirmarInativacao(responsavel: ResponsavelOutput) {
     this.confirmationService.confirm({
-      message: `Deseja excluir o responsável <strong>${responsavel.nome}</strong>?`,
-      header: 'Confirmar exclusão',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Excluir',
-      rejectLabel: 'Cancelar',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () => this.excluir(responsavel.id),
+      message:                  `Deseja inativar o responsável <strong>${responsavel.nome}</strong>?`,
+      header:                   'Confirmar inativação',
+      icon:                     'pi pi-exclamation-triangle',
+      acceptLabel:              'Sim, inativar',
+      rejectLabel:              'Cancelar',
+      acceptButtonStyleClass:   'p-button-danger',
+      accept: () => this.inativar(responsavel.id),
     });
   }
 
-  private excluir(id: number) {
+  private inativar(id: number) {
     this.service.excluir(id).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
-          summary: 'Excluído',
-          detail: MSG.responsavel.excluidoSucesso,
+          summary:  'Sucesso',
+          detail:   MSG.responsavel.inativadoSucesso,
+          life:     4000,
         });
-        this.carregar(this.currentPage, this.rows(), this.sortField(), this.sortOrder(), this.currentFilters);
+        this.carregarDados(this.paginaAtual());
       },
+      error: () => {},
     });
   }
 

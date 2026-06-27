@@ -29,8 +29,8 @@
           inputStyleClass="w-full"
           [invalid]="senhaAtualControl.invalid && senhaAtualControl.touched"
         />
-        @if (senhaAtualControl.invalid && senhaAtualControl.touched) {
-          <small class="field-error">Senha atual é obrigatória</small>
+        @if (senhaAtualControl | campoErroMensagem; as msg) {
+          <small class="field-error">{{ msg }}</small>
         }
       </div>
 
@@ -47,7 +47,9 @@
           [invalid]="novaSenhaInvalida"
         />
         @if (novaSenhaControl.touched) {
-          @if (novaSenhaControl.hasError('required')) {
+          @if (novaSenhaControl.errors?.['apiError']) {
+            <small class="field-error">{{ novaSenhaControl.errors?.['apiError'] }}</small>
+          } @else if (novaSenhaControl.hasError('required')) {
             <small class="field-error">Nova senha é obrigatória</small>
           } @else if (form.hasError('novaIgualAtual')) {
             <small class="field-error">A nova senha deve ser diferente da senha atual</small>
@@ -102,7 +104,9 @@
           [invalid]="confirmarSenhaInvalida"
         />
         @if (confirmarSenhaControl.touched) {
-          @if (confirmarSenhaControl.hasError('required')) {
+          @if (confirmarSenhaControl.errors?.['apiError']) {
+            <small class="field-error">{{ confirmarSenhaControl.errors?.['apiError'] }}</small>
+          } @else if (confirmarSenhaControl.hasError('required')) {
             <small class="field-error">Confirmação de senha é obrigatória</small>
           } @else if (form.hasError('senhasNaoConferem')) {
             <small class="field-error">As senhas não conferem</small>

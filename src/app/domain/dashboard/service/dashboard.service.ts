@@ -12,7 +12,7 @@ export class DashboardService {
   carregarResumo() {
     return forkJoin({
       financeiro: this.financeiro.resumo(),
-      alunos: this.aluno.listarAtivos(),
+      alunos: this.aluno.listar(0, 1, 'nome,asc', { status: 'ATIVO' }),
     }).pipe(
       map(({ financeiro, alunos }): ResumoCard[] => [
         {
@@ -20,7 +20,7 @@ export class DashboardService {
           value: `R$ ${financeiro.totalRecebido.toLocaleString('pt-BR')}`,
           icon: 'pi pi-check-circle',
           color: 'green',
-          sub: `${alunos.length} pagamentos`,
+          sub: `${alunos.totalElements} pagamentos`,
         },
         {
           label: 'Pendentes',
@@ -38,7 +38,7 @@ export class DashboardService {
         },
         {
           label: 'Total de alunos',
-          value: String(alunos.length),
+          value: String(alunos.totalElements),
           icon: 'pi pi-users',
           color: 'blue',
           sub: 'alunos ativos',

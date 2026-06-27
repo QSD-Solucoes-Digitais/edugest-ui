@@ -7,7 +7,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { MessageService } from 'primeng/api';
 import { UsuarioService } from '../../service/usuario.service';
+import { FormErrorService } from '../../../../shared/services/form-error.service';
+import { CampoErroMensagemPipe } from '../../../../shared/pipes/campo-erro-mensagem.pipe';
 import { MSG } from '../../../../shared/constants/messages';
 import { UsuarioInput } from '../../model/usuario.model';
 import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
@@ -24,6 +27,7 @@ import { PerfilUsuario } from '../../../../core/auth/services/auth.service';
     SelectModule,
     CardModule,
     ToggleSwitchModule,
+    CampoErroMensagemPipe,
   ],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.scss',
@@ -33,20 +37,25 @@ export class UsuarioFormComponent implements OnInit {
   private service = inject(UsuarioService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private messageService = inject(MessageService);
+  private formErrorService = inject(FormErrorService);
 
   id = signal<number | null>(null);
   salvando = signal(false);
   carregando = signal(false);
+  modoDetalhe = signal(false);
 
   get modoEdicao(): boolean {
     return this.id() !== null;
   }
 
   get titulo(): string {
+    if (this.modoDetalhe()) return 'Detalhes do usuário';
     return this.modoEdicao ? 'Editar usuário' : 'Novo usuário';
   }
 
   get subtitulo(): string {
+    if (this.modoDetalhe()) return 'Visualize os dados do usuário';
     return this.modoEdicao ? 'Atualize os dados do usuário' : 'Preencha os dados do usuário';
   }
 
@@ -68,6 +77,9 @@ export class UsuarioFormComponent implements OnInit {
   });
 
   ngOnInit() {
+    const detalhar = this.route.snapshot.url.some(s => s.path === 'detalhar');
+    if (detalhar) this.modoDetalhe.set(true);
+
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.id.set(Number(idParam));
@@ -86,6 +98,7 @@ export class UsuarioFormComponent implements OnInit {
           perfil: usuario.perfil,
           ativo:  usuario.ativo,
         });
+        if (this.modoDetalhe()) this.form.disable();
         this.carregando.set(false);
       },
       error: () => {
@@ -119,8 +132,17 @@ export class UsuarioFormComponent implements OnInit {
           },
         });
       },
-      error: () => {
+      error: (err) => {
         this.salvando.set(false);
+        const mensagem = this.formErrorService.tratar(err, this.form);
+        if (mensagem) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro ao salvar',
+            detail: mensagem,
+            life: 5000,
+          });
+        }
       },
     });
   }
@@ -128,21 +150,5 @@ export class UsuarioFormComponent implements OnInit {
   isInvalid(campo: string): boolean {
     const control = this.form.get(campo);
     return !!(control?.invalid && control?.touched);
-  }
-
-  erroMensagem(campo: string): string {
-    const control = this.form.get(campo);
-    if (!control) return '';
-    if (control.hasError('required')) {
-      const msgs: Record<string, string> = {
-        nome:   MSG.usuario.nomeObrigatorio,
-        login:  MSG.usuario.emailObrigatorio,
-        perfil: MSG.usuario.perfilObrigatorio,
-      };
-      return msgs[campo] ?? 'Campo obrigatório';
-    }
-    if (control.hasError('minlength')) return MSG.usuario.nomeMinimo;
-    if (control.hasError('email'))     return MSG.usuario.emailInvalido;
-    return '';
   }
 }

@@ -1,0 +1,155 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ titulo }}</h1>
+    <p class="page-subtitle">{{ subtitulo }}</p>
+  </div>
+  <p-button
+    label="Voltar"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    [text]="true"
+    routerLink="/alunos"
+  />
+</div>
+
+<form [formGroup]="form" (ngSubmit)="salvar()">
+
+  <p-card header="Dados do aluno">
+    <div class="formgrid grid">
+      @if (modoEdicao && matricula()) {
+        <div class="field col-4">
+          <label>Matrícula</label>
+          <input
+            pInputText
+            [value]="matricula()"
+            class="w-full"
+            [disabled]="true"
+          />
+        </div>
+      }
+
+      <div class="field col-12">
+        <label for="responsavel">Responsável *</label>
+        <p-autocomplete
+          inputId="responsavel"
+          [ngModel]="responsavelSelecionado()"
+          [ngModelOptions]="{standalone: true}"
+          (ngModelChange)="onResponsavelChange($event)"
+          (onBlur)="form.get('responsavelId')?.markAsTouched()"
+          [suggestions]="sugestoesResponsaveis()"
+          (completeMethod)="buscarResponsaveis($event)"
+          [forceSelection]="true"
+          [disabled]="modoDetalhe()"
+          optionLabel="nome"
+          placeholder="Buscar por nome ou CPF"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('responsavelId')"
+          [class.ng-touched]="form.get('responsavelId')?.touched"
+        >
+          <ng-template #item let-r>
+            {{ r.nome }} - {{ r.cpf }}
+          </ng-template>
+        </p-autocomplete>
+        @if (form.get('responsavelId') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
+        }
+      </div>
+
+      <div class="field col-12">
+        <label for="nome">Nome completo *</label>
+        <input
+          pInputText
+          id="nome"
+          formControlName="nome"
+          placeholder="Ex: Pedro da Silva"
+          class="w-full"
+          [class.ng-invalid]="isInvalid('nome')"
+        />
+        @if (form.get('nome') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
+        }
+      </div>
+
+      <div class="field col-4">
+        <label for="cpf">CPF <span style="color:var(--text-muted);font-size:11px">(opcional)</span></label>
+        <input
+          pInputText
+          id="cpf"
+          formControlName="cpf"
+          placeholder="000.000.000-00"
+          maxlength="14"
+          class="w-full"
+          (input)="formatarCpf($event)"
+        />
+        @if (form.get('cpf') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
+        }
+      </div>
+
+      <div class="field col-4">
+        <label for="genero">Gênero *</label>
+        <p-select
+          inputId="genero"
+          formControlName="genero"
+          [options]="opcoesGenero"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecione o gênero"
+          styleClass="w-full"
+          [class.ng-invalid]="isInvalid('genero')"
+        />
+        @if (form.get('genero') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+            <i class="pi pi-exclamation-circle"></i>{{ msg }}
+          </span>
+        }
+      </div>
+
+      <div class="field col-4">
+        <label for="dataNascimento">Data de nascimento *</label>
+        <p-datepicker
+          inputId="dataNascimento"
+          formControlName="dataNascimento"
+          dateFormat="dd/mm/yy"
+          [maxDate]="hoje"
+          [showIcon]="true"
+          placeholder="dd/mm/aaaa"
+          styleClass="w-full"
+          [class.ng-invalid]="isInvalid('dataNascimento')"
+        />
+        @if (form.get('dataNascimento') | campoErroMensagem; as msg) {
+          <span class="field-error-msg">
+      <i class="pi pi-exclamation-circle"></i>{{ msg }}
+    </span>
+        }
+      </div>
+
+    </div>
+  </p-card>
+
+  <div class="form-actions">
+    <p-button
+      [label]="modoDetalhe() ? 'Voltar' : 'Cancelar'"
+      severity="secondary"
+      [text]="true"
+      type="button"
+      routerLink="/alunos"
+    />
+    @if (!modoDetalhe()) {
+      <p-button
+        type="submit"
+        [label]="labelBotaoSalvar"
+        icon="pi pi-check"
+        [loading]="salvando()"
+        [disabled]="form.invalid || salvando()"
+      />
+    }
+  </div>
+
+</form>
