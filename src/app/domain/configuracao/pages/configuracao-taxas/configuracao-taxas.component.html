@@ -1,0 +1,291 @@
+<p-toast />
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ tituloPage() }}</h1>
+    <p class="page-subtitle">Histórico de taxas do ano letivo</p>
+  </div>
+
+  @if (podeCriarConfig()) {
+    <p-button
+      label="Nova configuração"
+      icon="pi pi-plus"
+      (onClick)="abrirNovaConfig()"
+    />
+  }
+</div>
+
+<p-table
+  [value]="configs()"
+  [lazy]="true"
+  [loading]="carregando()"
+  [totalRecords]="totalRegistros()"
+  [rows]="rows()"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  [paginator]="true"
+  (onLazyLoad)="onCarregarDados($event)"
+  stripedRows
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Vigente desde</th>
+      <th>Vencimento</th>
+      <th>Taxa de matrícula</th>
+      <th>Multa</th>
+      <th>Juros ao mês</th>
+      <th>Status</th>
+      <th style="width: 5rem">Ações</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-cfg>
+    <tr>
+      <td>{{ cfg.vigenteAPartir | date:'dd/MM/yyyy' }}</td>
+      <td>Dia {{ cfg.diaVencimento }}</td>
+      <td>{{ cfg.taxaMatricula != null ? (cfg.taxaMatricula | currencyBr) : '—' }}</td>
+      <td>{{ formatarMulta(cfg) }}</td>
+      <td>{{ cfg.jurosPercentualMes != null ? cfg.jurosPercentualMes + '% ao mês' : '—' }}</td>
+      <td>
+        <p-tag
+          [value]="labelStatusConfig(cfg)"
+          [severity]="severidadeStatusConfig(cfg)"
+        />
+      </td>
+      <td>
+        <div class="flex gap-1">
+          @if (podeEditar(cfg)) {
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="secondary"
+              pTooltip="Editar configuração"
+              tooltipPosition="top"
+              (onClick)="abrirEdicao(cfg)"
+            />
+          } @else {
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="info"
+              pTooltip="Visualizar configuração"
+              tooltipPosition="top"
+              (onClick)="abrirVisualizacao(cfg)"
+            />
+          }
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">
+        <div class="empty-state">
+          <i class="pi pi-percentage"></i>
+          <p class="empty-title">Nenhuma configuração financeira cadastrada</p>
+          @if (podeCriarConfig()) {
+            <p-button
+              label="Nova configuração"
+              icon="pi pi-plus"
+              [outlined]="true"
+              (onClick)="abrirNovaConfig()"
+            />
+          }
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div class="table-actions">
+  <p-button
+    label="Voltar"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    [text]="true"
+    routerLink="/configuracoes/anos-letivos"
+  />
+</div>
+
+<!-- Dialog: Nova Configuração / Edição / Visualização de Taxas -->
+<p-dialog
+  [visible]="dialogVisivel()"
+  (visibleChange)="dialogVisivel.set($event)"
+  (onHide)="fecharDialog()"
+  [header]="tituloDialog()"
+  [modal]="true"
+  [style]="{ width: '38rem' }"
+  [closable]="true"
+>
+  @if (modoVisualizacao()) {
+    <div class="distanciaTop">
+      <p-message severity="info" styleClass="mb-4 w-full">
+        <span>Esta configuração já entrou em vigor e não pode ser alterada.</span>
+      </p-message>
+    </div>
+  }
+
+  @if (!modoEdicao() && !modoVisualizacao()) {
+    <div class="vigencia-selector">
+      <label class="vigencia-label">Quando esta configuração deve entrar em vigor?</label>
+      <div [formGroup]="formConfig" class="vigencia-opcoes">
+        <div class="vigencia-opcao">
+          <p-radioButton
+            name="vigencia"
+            inputId="vigencia-proximo-mes"
+            [value]="false"
+            formControlName="vigenciaImediata"
+            (onClick)="atualizarPreviewVigencia(false)"
+          />
+          <label for="vigencia-proximo-mes">
+            No próximo mês
+            @if (formConfig.get('vigenciaImediata')?.value === false) {
+              <span class="vigencia-data">({{ dataVigenciaPreview() }})</span>
+            }
+          </label>
+        </div>
+        <div class="vigencia-opcao">
+          <p-radioButton
+            name="vigencia"
+            inputId="vigencia-imediata"
+            [value]="true"
+            formControlName="vigenciaImediata"
+            (onClick)="atualizarPreviewVigencia(true)"
+          />
+          <label for="vigencia-imediata">
+            Imediatamente (hoje)
+            @if (formConfig.get('vigenciaImediata')?.value === true) {
+              <span class="vigencia-data">({{ dataVigenciaPreview() }})</span>
+            }
+          </label>
+        </div>
+      </div>
+      @if (formConfig.get('vigenciaImediata')?.value === true) {
+        <small class="campo-hint campo-hint-alerta">
+          <i class="pi pi-exclamation-triangle"></i>
+          Mensalidades já geradas neste mês não serão recalculadas.
+        </small>
+      }
+    </div>
+  }
+
+  @if (modoEdicao()) {
+    <div class="distanciaTop">
+      <p-message severity="info" styleClass="mb-4 w-full">
+        <span>
+          Esta configuração entra em vigor em <strong>{{ dataVigenciaPreview() }}</strong>.
+          Apenas os valores das taxas podem ser alterados.
+        </span>
+      </p-message>
+    </div>
+  }
+
+  <form [formGroup]="formConfig" class="formgrid grid dialog-form">
+
+    <div class="field col-6">
+      <label for="diaVencimento">Dia de vencimento *</label>
+      <p-inputnumber
+        inputId="diaVencimento"
+        formControlName="diaVencimento"
+        placeholder="10"
+        [min]="1"
+        [max]="28"
+        styleClass="w-full"
+        [class.ng-invalid]="isInvalid('diaVencimento')"
+      />
+      @if (formConfig.get('diaVencimento') | campoErroMensagem; as msg) {
+        <span class="field-error-msg">
+          <i class="pi pi-exclamation-circle"></i>{{ msg }}
+        </span>
+      }
+      <small class="campo-hint">
+        <i class="pi pi-info-circle"></i>
+        Use dia 28 para evitar problemas em fevereiro.
+      </small>
+    </div>
+
+    <div class="field col-6">
+      <label for="taxaMatricula">Taxa de matrícula R$</label>
+      <p-inputnumber
+        inputId="taxaMatricula"
+        formControlName="taxaMatricula"
+        mode="currency"
+        currency="BRL"
+        locale="pt-BR"
+        placeholder="0,00"
+        styleClass="w-full"
+      />
+    </div>
+
+    <div class="field col-6">
+      <label for="multaValorFixo">Multa valor fixo R$</label>
+      <p-inputnumber
+        inputId="multaValorFixo"
+        formControlName="multaValorFixo"
+        mode="currency"
+        currency="BRL"
+        locale="pt-BR"
+        placeholder="0,00"
+        styleClass="w-full"
+      />
+    </div>
+
+    <div class="field col-6">
+      <label for="multaPercentual">Multa percentual %</label>
+      <p-inputnumber
+        inputId="multaPercentual"
+        formControlName="multaPercentual"
+        suffix="%"
+        [maxFractionDigits]="2"
+        [min]="0"
+        [max]="100"
+        placeholder="0,00"
+        styleClass="w-full"
+      />
+    </div>
+
+    <div class="field col-6">
+      <label for="jurosPercentualMes">Juros ao mês %</label>
+      <p-inputnumber
+        inputId="jurosPercentualMes"
+        formControlName="jurosPercentualMes"
+        suffix="%"
+        [maxFractionDigits]="2"
+        [min]="0"
+        [max]="100"
+        placeholder="0,00"
+        styleClass="w-full"
+      />
+    </div>
+
+  </form>
+
+  <ng-template pTemplate="footer">
+    @if (modoVisualizacao()) {
+      <p-button
+        label="Fechar"
+        severity="secondary"
+        [text]="true"
+        (onClick)="fecharDialog()"
+      />
+    } @else {
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        (onClick)="fecharDialog()"
+      />
+      <p-button
+        [label]="modoEdicao() ? 'Atualizar' : 'Salvar'"
+        icon="pi pi-check"
+        [loading]="salvando()"
+        [disabled]="formConfig.invalid || salvando()"
+        (onClick)="salvarConfig()"
+      />
+    }
+  </ng-template>
+</p-dialog>

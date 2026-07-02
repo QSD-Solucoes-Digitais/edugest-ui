@@ -103,8 +103,12 @@ export class SidebarComponent implements OnInit {
     {
       label: 'Configurações',
       icon: 'pi pi-cog',
-      route: '/configuracoes',
-      disabled: true,
+      allowedPerfis: ['ADMIN'],
+      expanded: false,
+      children: [
+        { label: 'Dados da Escola', icon: 'pi pi-building', route: '/configuracoes/escola' },
+        { label: 'Anos Letivos',    icon: 'pi pi-calendar',  route: '/configuracoes/anos-letivos' },
+      ],
     },
   ]);
 

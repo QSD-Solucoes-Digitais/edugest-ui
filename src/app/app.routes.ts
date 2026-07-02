@@ -182,6 +182,44 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'configuracoes',
+        canActivate: [roleGuard],
+        data: { perfis: ['ADMIN'] },
+        children: [
+          { path: '', redirectTo: 'escola', pathMatch: 'full' },
+          {
+            path: 'escola',
+            data: { breadcrumbs: [{ label: 'Configurações' }, { label: 'Dados da Escola' }] },
+            loadComponent: () =>
+              import('./domain/configuracao/pages/configuracao-escola/configuracao-escola.component').then(
+                m => m.ConfiguracaoEscolaComponent
+              ),
+          },
+          {
+            path: 'anos-letivos',
+            data: { breadcrumbs: [{ label: 'Configurações' }, { label: 'Anos Letivos' }] },
+            loadComponent: () =>
+              import('./domain/configuracao/pages/configuracao-anos/configuracao-anos.component').then(
+                m => m.ConfiguracaoAnosComponent
+              ),
+          },
+          {
+            path: 'anos-letivos/:anoLetivoId/taxas',
+            data: {
+              breadcrumbs: [
+                { label: 'Configurações' },
+                { label: 'Anos Letivos', routerLink: '/configuracoes/anos-letivos' },
+                { label: 'Taxas' },
+              ],
+            },
+            loadComponent: () =>
+              import('./domain/configuracao/pages/configuracao-taxas/configuracao-taxas.component').then(
+                m => m.ConfiguracaoTaxasComponent
+              ),
+          },
+        ],
+      },
       { path: '**', redirectTo: 'dashboard' },
     ],
   },

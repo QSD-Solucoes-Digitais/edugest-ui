@@ -1,0 +1,246 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Anos Letivos</h1>
+    <p class="page-subtitle">Gerencie os anos letivos e configurações financeiras</p>
+  </div>
+  <p-button
+    label="Novo Ano Letivo"
+    icon="pi pi-plus"
+    (onClick)="abrirDialogNovoAno()"
+  />
+</div>
+
+<div class="filters-card">
+  <form [formGroup]="filtroForm" class="formgrid grid">
+    <div class="field col-4">
+      <label>Ano letivo</label>
+      <p-inputnumber
+        formControlName="ano"
+        [useGrouping]="false"
+        placeholder="Ex: 2026"
+        styleClass="w-full"
+      />
+    </div>
+    <div class="filter-actions col-12">
+      <p-button label="Filtrar" icon="pi pi-search" (onClick)="filtrar()" />
+      <p-button label="Limpar" icon="pi pi-times" [outlined]="true" (onClick)="limparFiltros()" />
+    </div>
+  </form>
+</div>
+
+<p-table
+  [value]="anosLetivos()"
+  [lazy]="true"
+  [loading]="carregando()"
+  [totalRecords]="totalRegistros()"
+  [rows]="rows()"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  [paginator]="true"
+  (onLazyLoad)="onCarregarDados($event)"
+  stripedRows
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Ano</th>
+      <th>Período</th>
+      <th>Parcelas</th>
+      <th>Início</th>
+      <th>Término</th>
+      <th>Status</th>
+      <th style="width: 10rem">Ações</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-ano>
+    <tr>
+      <td><strong>{{ ano.ano }}</strong></td>
+      <td>{{ labelPeriodo(ano.tipoPeriodo) }}</td>
+      <td>{{ ano.numeroParcelas }}x</td>
+      <td>{{ ano.dataInicio | date:'dd/MM/yyyy' }}</td>
+      <td>{{ ano.dataTermino | date:'dd/MM/yyyy' }}</td>
+      <td>
+        <p-tag
+          [value]="labelStatus(ano.status)"
+          [severity]="severidadeStatus(ano.status)"
+        />
+      </td>
+      <td>
+        <div class="flex gap-1 align-items-center">
+
+          @if (ano.status === 'PLANEJADO') {
+            <p-button
+              icon="pi pi-check-circle"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="success"
+              pTooltip="Ativar ano letivo"
+              tooltipPosition="top"
+              (onClick)="confirmarAtivacao(ano)"
+            />
+          }
+
+          @if (ano.status === 'ATIVO') {
+            <p-button
+              icon="pi pi-calendar-plus"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="info"
+              [pTooltip]="'Criar ano letivo ' + (ano.ano + 1)"
+              tooltipPosition="top"
+              (onClick)="confirmarProximoAno(ano)"
+            />
+          }
+
+          <p-button
+            icon="pi pi-percentage"
+            [rounded]="true"
+            [text]="true"
+            size="small"
+            severity="info"
+            pTooltip="Ver configurações financeiras"
+            tooltipPosition="top"
+            (onClick)="verTaxas(ano)"
+          />
+
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">
+        <div class="empty-state">
+          <i class="pi pi-calendar"></i>
+          <p class="empty-title">Nenhum ano letivo cadastrado</p>
+          <p class="empty-subtitle">Clique em "Novo Ano Letivo" para começar.</p>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Dialog: Novo Ano Letivo -->
+<p-dialog
+  [visible]="dialogNovoAnoVisivel()"
+  (visibleChange)="dialogNovoAnoVisivel.set($event)"
+  header="Novo Ano Letivo"
+  [modal]="true"
+  [style]="{ width: '38rem' }"
+  [closable]="true"
+>
+  <form [formGroup]="formNovoAno" class="formgrid grid dialog-form">
+
+    <div class="field col-6">
+      <label for="ano">Ano letivo *</label>
+      <p-inputnumber
+        inputId="ano"
+        formControlName="ano"
+        [useGrouping]="false"
+        placeholder="2027"
+        styleClass="w-full"
+        [class.ng-invalid]="isInvalidNovoAno('ano')"
+      />
+      @if (formNovoAno.get('ano') | campoErroMensagem; as msg) {
+        <span class="field-error-msg">
+          <i class="pi pi-exclamation-circle"></i>{{ msg }}
+        </span>
+      }
+    </div>
+
+    <div class="field col-6">
+      <label for="tipoPeriodo">Tipo de período *</label>
+      <p-select
+        inputId="tipoPeriodo"
+        formControlName="tipoPeriodo"
+        [options]="opcoesTipoPeriodo"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione"
+        class="w-full"
+        [class.ng-invalid]="isInvalidNovoAno('tipoPeriodo')"
+      />
+      @if (formNovoAno.get('tipoPeriodo') | campoErroMensagem; as msg) {
+        <span class="field-error-msg">
+          <i class="pi pi-exclamation-circle"></i>{{ msg }}
+        </span>
+      }
+    </div>
+
+    <div class="field col-6">
+      <label for="dataInicio">Data de início *</label>
+      <p-datepicker
+        inputId="dataInicio"
+        formControlName="dataInicio"
+        dateFormat="dd/mm/yy"
+        placeholder="DD/MM/AAAA"
+        [showIcon]="true"
+        styleClass="w-full"
+        [class.ng-invalid]="isInvalidNovoAno('dataInicio')"
+      />
+      @if (formNovoAno.get('dataInicio') | campoErroMensagem; as msg) {
+        <span class="field-error-msg">
+          <i class="pi pi-exclamation-circle"></i>{{ msg }}
+        </span>
+      }
+    </div>
+
+    <div class="field col-6">
+      <label for="dataTermino">Data de término *</label>
+      <p-datepicker
+        inputId="dataTermino"
+        formControlName="dataTermino"
+        dateFormat="dd/mm/yy"
+        placeholder="DD/MM/AAAA"
+        [showIcon]="true"
+        styleClass="w-full"
+        [class.ng-invalid]="isInvalidNovoAno('dataTermino')"
+      />
+      @if (formNovoAno.get('dataTermino') | campoErroMensagem; as msg) {
+        <span class="field-error-msg">
+          <i class="pi pi-exclamation-circle"></i>{{ msg }}
+        </span>
+      }
+    </div>
+
+    <div class="field col-6">
+      <label for="numeroParcelas">Número de parcelas *</label>
+      <p-inputnumber
+        inputId="numeroParcelas"
+        formControlName="numeroParcelas"
+        placeholder="10"
+        [min]="1"
+        [max]="24"
+        styleClass="w-full"
+        [class.ng-invalid]="isInvalidNovoAno('numeroParcelas')"
+      />
+      @if (formNovoAno.get('numeroParcelas') | campoErroMensagem; as msg) {
+        <span class="field-error-msg">
+          <i class="pi pi-exclamation-circle"></i>{{ msg }}
+        </span>
+      }
+    </div>
+
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      (onClick)="dialogNovoAnoVisivel.set(false)"
+    />
+    <p-button
+      label="Criar ano letivo"
+      icon="pi pi-check"
+      [loading]="salvandoAno()"
+      [disabled]="formNovoAno.invalid || salvandoAno()"
+      (onClick)="salvarNovoAno()"
+    />
+  </ng-template>
+</p-dialog>
